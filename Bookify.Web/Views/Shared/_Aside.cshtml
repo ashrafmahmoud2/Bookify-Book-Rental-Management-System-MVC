@@ -9,7 +9,7 @@
 				<!--begin:Menu item-->
 				<div class="menu-item">
 					<!--begin:Menu link-->
-					<a class="menu-link active" href="/">
+					<a class="menu-link active" asp-controller="Home" asp-action="Index" >
 						<span class="menu-icon">
 							<!--begin::Svg Icon | path: icons/duotune/general/gen002.svg-->
 							<span class="svg-icon svg-icon-2">
@@ -20,6 +20,18 @@
 							<!--end::Svg Icon-->
 						</span>
 						<span class="menu-title">Home</span>
+					</a>
+					<!--end:Menu link-->
+				</div>
+				<!--end:Menu item-->
+				<!--begin:Menu item-->
+				<div class="menu-item" >
+					<!--begin:Menu link-->
+					<a class="menu-link" asp-controller="Categories" asp-action="index">
+						<span class="menu-icon">
+							<i class="fa-solid fa-layer-group"></i>
+						</span>
+						<span class="menu-title">Category</span>
 					</a>
 					<!--end:Menu link-->
 				</div>

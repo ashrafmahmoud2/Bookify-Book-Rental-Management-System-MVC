@@ -1,6 +1,9 @@
 ﻿using Bookify.Web.Core.Models;
 using Bookify.Web.Core.ViewModel;
+using Bookify.Web.Filters;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace Bookify.Web.Controllers;
 public class CategoriesController : Controller
@@ -18,9 +21,11 @@ public class CategoriesController : Controller
         return View(_context.Categories.AsNoTracking().ToList());
     }
 
+    [AjaxOnly]
     public IActionResult Create()
     {
-        return View("Form");
+        return PartialView("_Form");
+        // Returning a partial view to load only the form, without the layout
     }
 
     [HttpPost]
@@ -28,7 +33,11 @@ public class CategoriesController : Controller
     public IActionResult Create(CategoryFormViewModel model)
     {
         if (!ModelState.IsValid)
-            return View("Form",model);
+            return BadRequest();
+
+
+        if (_context.Categories.Any(c => c.Name == model.Name))
+            return Conflict("A category with this name already exists.");
 
 
         var category = new Category { Name = model.Name };
@@ -36,10 +45,12 @@ public class CategoriesController : Controller
         _context.Add(category);
         _context.SaveChanges();
 
-        return RedirectToAction(nameof(Index));
+        return PartialView("_CategoryRow",category);
+        // Return the new row for  update
     }
 
     [HttpGet]
+    [AjaxOnly]
     public IActionResult Edit(int id)
     {
         var category = _context.Categories.Find(id);
@@ -53,7 +64,7 @@ public class CategoriesController : Controller
             Name = category.Name
         };
 
-        return View("Form", viewModel);
+        return PartialView("_Form", viewModel);
     }
 
     [HttpPost]
@@ -61,7 +72,7 @@ public class CategoriesController : Controller
     public IActionResult Edit(CategoryFormViewModel model)
     {
         if (!ModelState.IsValid)
-            return View("Form", model);
+            return BadRequest();
 
         var category = _context.Categories.Find(model.Id);
 
@@ -73,7 +84,7 @@ public class CategoriesController : Controller
 
         _context.SaveChanges();
 
-        return RedirectToAction(nameof(Index));
+        return PartialView("_CategoryRow", category);
     }
 
 
@@ -94,6 +105,7 @@ public class CategoriesController : Controller
     [HttpPut]
     public IActionResult ToggleStatus(int id)
     {
+
         var category = _context.Categories.Find(id);
 
         if (category is null)
@@ -104,15 +116,11 @@ public class CategoriesController : Controller
 
         _context.SaveChanges();
         return Ok(DateTime.Now.ToString("dd/MM/yyyy"));
-        0
+
     }
 
-
-    //stop in section 8
-    // in see this vido https://www.youtube.com/watch?v=Vb4md5w6JJ8
 
 
 
 }
 
-//the theme link https://preview.keenthemes.com/html/metronic/docs/icons/keenicons

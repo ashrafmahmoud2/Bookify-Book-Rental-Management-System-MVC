@@ -1,18 +1,96 @@
-html {
-  font-size: 14px;
+/* Apply common button styles */
+div.dt-buttons .dt-button {
+    border-radius: var(--bs-btn-border-radius, 6px);
+    padding: var(--bs-btn-padding-y, 8px) var(--bs-btn-padding-x, 15px);
+    font-size: var(--bs-btn-font-size, 1rem);
+    font-weight: var(--bs-btn-font-weight, 600);
+    border: var(--bs-btn-border-width, 0);
+    box-shadow: var(--bs-btn-box-shadow, none);
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    color: var(--bs-btn-color, #fff);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    div.dt-buttons .dt-button:hover {
+        transform: scale(1.05);
+    }
+
+/* Specific Button Colors */
+div.dt-buttons .buttons-copy {
+    background-color: var(--bs-btn-bg, #007bff); /* Blue */
+    color: var(--bs-btn-color, white);
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+    div.dt-buttons .buttons-copy:hover {
+        background-color: #0056b3; /* Darker Blue */
+    }
+
+div.dt-buttons .buttons-csv {
+    background-color: var(--bs-btn-bg, #28a745); /* Green */
+    color: var(--bs-btn-color, white);
 }
 
-body {
-  margin-bottom: 60px;
+    div.dt-buttons .buttons-csv:hover {
+        background-color: #1e7e34; /* Darker Green */
+    }
+
+div.dt-buttons .buttons-excel {
+    background-color: var(--bs-btn-bg, #17a2b8); /* Teal */
+    color: var(--bs-btn-color, white);
 }
+
+    div.dt-buttons .buttons-excel:hover {
+        background-color: #117a8b; /* Darker Teal */
+    }
+
+div.dt-buttons .buttons-pdf {
+    background-color: var(--bs-btn-bg, #dc3545); /* Red */
+    color: var(--bs-btn-color, white);
+}
+
+    div.dt-buttons .buttons-pdf:hover {
+        background-color: #bd2130; /* Darker Red */
+    }
+
+div.dt-buttons .buttons-print {
+    background-color: var(--bs-btn-bg, #ffc107); /* Yellow */
+    color: var(--bs-btn-color, black);
+}
+
+    div.dt-buttons .buttons-print:hover {
+        background-color: #e0a800; /* Darker Yellow */
+    }
+
+
+
+/* Style the DataTables search input */
+div.dataTables_filter input {
+    border-radius: var(--bs-btn-border-radius, 6px);
+    padding: var(--bs-btn-padding-y, 8px) var(--bs-btn-padding-x, 15px);
+    font-size: var(--bs-btn-font-size, 1rem);
+    font-weight: var(--bs-btn-font-weight, 600);
+    border: var(--bs-btn-border-width, 1px) solid #ced4da;
+    box-shadow: var(--bs-btn-box-shadow, none);
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    color: var(--bs-btn-color, #495057);
+    background-color: var(--bs-input-bg, white);
+    outline: none;
+}
+
+    /* Add focus effect */
+    div.dataTables_filter input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 2px rgba(0, 123, 255, 0.5);
+    }
+
+/* Align the search box with buttons */
+div.dataTables_filter {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+    div.dataTables_filter label {
+        font-weight: 600;
+        margin-right: 10px;
+    }

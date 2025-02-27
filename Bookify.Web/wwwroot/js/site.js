@@ -1,5 +1,15 @@
 ﻿var updatedRow;
 var dataTable;
+
+function onModalBegin() {
+    let submitButton = $('#Modal :submit');
+    submitButton.prop('disabled', true);
+    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
+
+}
+
+
+
 function showSuccessMessage(message = 'Saved successfully!') {
     Swal.fire({
         icon: 'success',
@@ -38,6 +48,12 @@ function onModalSuccess(row) {
     KTMenu.init();
     KTMenu.initHandlers();
 }
+
+function onModalComplete() {
+    $('#Modal :submit').prop('disabled', false).text('Save');
+}
+
+
 
 
 $(document).ready(function () {

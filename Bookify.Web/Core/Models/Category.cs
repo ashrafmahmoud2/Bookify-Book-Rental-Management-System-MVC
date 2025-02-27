@@ -1,8 +1,10 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
 namespace Bookify.Web.Core.Models;
 
+[Index(nameof(Name),IsUnique = true)]
 public class Category
 {
 

@@ -1,31 +1,30 @@
-﻿using Bookify.Web.Core.Models;
-using Bookify.Web.Core.ViewModel;
-using Bookify.Web.Filters;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Net.NetworkInformation;
-
-namespace Bookify.Web.Controllers;
+﻿namespace Bookify.Web.Controllers;
 public class CategoriesController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public CategoriesController(ApplicationDbContext context)
+    public CategoriesController(ApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-
+    [HttpGet]
     public IActionResult Index()
     {
-        return View(_context.Categories.AsNoTracking().ToList());
+        var categories = _context.Categories.AsNoTracking().ToList();
+
+        var viewModel = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+
+        return View(viewModel);
     }
 
+    [HttpGet]
     [AjaxOnly]
     public IActionResult Create()
     {
         return PartialView("_Form");
-        // Returning a partial view to load only the form, without the layout
     }
 
     [HttpPost]
@@ -35,18 +34,13 @@ public class CategoriesController : Controller
         if (!ModelState.IsValid)
             return BadRequest();
 
-
-        if (_context.Categories.Any(c => c.Name == model.Name))
-            return Conflict("A category with this name already exists.");
-
-
-        var category = new Category { Name = model.Name };
-
+        var category = _mapper.Map<Category>(model);
         _context.Add(category);
         _context.SaveChanges();
 
-        return PartialView("_CategoryRow",category);
-        // Return the new row for  update
+        var viewModel = _mapper.Map<CategoryViewModel>(category);
+
+        return PartialView("_CategoryRow", viewModel);
     }
 
     [HttpGet]
@@ -58,11 +52,7 @@ public class CategoriesController : Controller
         if (category is null)
             return NotFound();
 
-        var viewModel = new CategoryFormViewModel
-        {
-            Id = id,
-            Name = category.Name
-        };
+        var viewModel = _mapper.Map<CategoryFormViewModel>(category);
 
         return PartialView("_Form", viewModel);
     }
@@ -79,14 +69,34 @@ public class CategoriesController : Controller
         if (category is null)
             return NotFound();
 
-        category.Name = model.Name;
+        category = _mapper.Map(model, category);
         category.LastUpdatedOn = DateTime.Now;
 
         _context.SaveChanges();
 
-        return PartialView("_CategoryRow", category);
+        var viewModel = _mapper.Map<CategoryViewModel>(category);
+
+        return PartialView("_CategoryRow", viewModel);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ToggleStatus(int id)
+    {
+
+        //stop in fix toggle and delete then maek book module
+        var category = _context.Categories.Find(id);
+
+        if (category is null)
+            return NotFound();
+
+        category.IsDeleted = !category.IsDeleted;
+        category.LastUpdatedOn = DateTime.Now;
+
+        _context.SaveChanges();
+
+        return Ok(category.LastUpdatedOn.ToString());
+    }
 
     public IActionResult Delete(int id)
     {
@@ -102,25 +112,17 @@ public class CategoriesController : Controller
 
     }
 
-    [HttpPut]
-    public IActionResult ToggleStatus(int id)
+    public IActionResult AllowItem(CategoryFormViewModel model)
     {
+        var category = _context.Categories.SingleOrDefault(c => c.Name == model.Name);
+        var isAllowed = category is null || category.Id.Equals(model.Id);
 
-        var category = _context.Categories.Find(id);
-
-        if (category is null)
-            return NotFound();
-
-        category.LastUpdatedOn = DateTime.Now;
-        category.IsDeleted = !category.IsDeleted;
-
-        _context.SaveChanges();
-        return Ok(DateTime.Now.ToString("dd/MM/yyyy"));
-
+        return Json(isAllowed);
     }
-
-
-
-
 }
+
+
+
+
+
 

@@ -8,8 +8,6 @@ function onModalBegin() {
 
 }
 
-
-
 function showSuccessMessage(message = 'Saved successfully!') {
     Swal.fire({
         icon: 'success',
@@ -32,18 +30,17 @@ function showErrorMessage(message = 'Something went wrong!') {
     });
 }
 
-function onModalSuccess(row) {
+function onModalSuccess(rowHtml) {
     showSuccessMessage();
     $('#Modal').modal('hide');
 
     if (updatedRow !== undefined) {
-        dataTable.row(updatedRow).remove().draw();
+        dataTable.row(updatedRow).remove().draw(false);  // Use draw(false) to keep pagination state
         updatedRow = undefined;
     }
 
-
-    let newRow = $(row);
-    dataTable.row.add(newRow).draw();    
+    let newRow = $(rowHtml);
+    dataTable.row.add(newRow).draw(false);  // Use draw(false) to keep pagination state
 
     KTMenu.init();
     KTMenu.initHandlers();
@@ -54,17 +51,14 @@ function onModalComplete() {
 }
 
 
-
-
 $(document).ready(function () {
-
 
     var message = $('#Message').text();
     if (message !== '') {
         showSuccessMessage(message);
     }
 
-    $('table').DataTable({
+  dataTable=  $('table').DataTable({
         dom: 'Bfrtip',
         buttons: [
             { extend: 'copy', text: '📋 Copy Table', className: 'btn btn-primary', exportOptions: { columns: [0, 1, 2, 3] } },
@@ -84,8 +78,7 @@ $(document).ready(function () {
         modal.find('#ModalLabel').text(btn.data('title'));
 
         if (btn.data('update') !== undefined) {
-            updatedRow = btn.parents('tr');
-            console.log(updatedRow);
+            updatedRow = btn.closest('tr');
         }
 
         $.get({
@@ -148,8 +141,6 @@ $(document).ready(function () {
         });
     });
 
-
-
     // Handle Delete
     $('body').on('click', '.js-delete', function () {
         let btn = $(this);
@@ -166,11 +157,9 @@ $(document).ready(function () {
 
                 $.ajax({
                     url: btn.data('url'),
-                    type: 'PUT',
+                    type: 'Delete',
                     success: () => {
-                        row.fadeOut(300, function () {
-                            $(this).remove();
-                        });
+                        dataTable.row(row).remove().draw(false); 
                         showSuccessMessage();
                     },
                     error: showErrorMessage
@@ -180,6 +169,7 @@ $(document).ready(function () {
     });
 
 });
+
 
 
 

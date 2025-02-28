@@ -1,4 +1,5 @@
 ﻿namespace Bookify.Web.Controllers;
+
 public class CategoriesController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -47,9 +48,8 @@ public class CategoriesController : Controller
     [AjaxOnly]
     public IActionResult Edit(int id)
     {
-        var category = _context.Categories.Find(id);
-
-        if (category is null)
+        var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+        if (category == null)
             return NotFound();
 
         var viewModel = _mapper.Map<CategoryFormViewModel>(category);
@@ -64,9 +64,8 @@ public class CategoriesController : Controller
         if (!ModelState.IsValid)
             return BadRequest();
 
-        var category = _context.Categories.Find(model.Id);
-
-        if (category is null)
+        var category = _context.Categories.FirstOrDefault(c => c.Id == model.Id);
+        if (category == null)
             return NotFound();
 
         category = _mapper.Map(model, category);
@@ -79,13 +78,13 @@ public class CategoriesController : Controller
         return PartialView("_CategoryRow", viewModel);
     }
 
-    [HttpPost]
+    [HttpPut]
     [ValidateAntiForgeryToken]
     public IActionResult ToggleStatus(int id)
     {
 
         //stop in fix toggle and delete then maek book module
-        var category = _context.Categories.Find(id);
+        var category = _context.Categories.FirstOrDefault(c => c.Id == id);
 
         if (category is null)
             return NotFound();
@@ -98,17 +97,17 @@ public class CategoriesController : Controller
         return Ok(category.LastUpdatedOn.ToString());
     }
 
+    [HttpDelete]
     public IActionResult Delete(int id)
     {
-        var category = _context.Categories.Find(id);
-
-        if (category is null)
+        var category = _context.Categories.SingleOrDefault(c => c.Id == id);
+        if (category == null)
             return NotFound();
 
         _context.Remove(category);
 
         _context.SaveChanges();
-        return RedirectToAction(nameof(Index));
+        return NoContent();
 
     }
 

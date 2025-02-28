@@ -41,7 +41,9 @@
     form:           '<form class="bootbox-form"></form>',
     button:         '<button type="button" class="btn"></button>',
     option:         '<option value=""></option>',
-    promptMessage:  '<div class="bootbox-prompt-message"></div>',
+    prompt
+    
+    :  '<div class="bootbox-prompt-message"></div>',
     inputs: {
       text:         '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" />',
       textarea:     '<textarea class="bootbox-input bootbox-input-textarea form-control"></textarea>',

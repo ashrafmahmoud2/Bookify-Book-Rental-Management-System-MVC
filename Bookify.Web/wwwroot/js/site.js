@@ -44,6 +44,7 @@ function onModalSuccess(rowHtml) {
 
     KTMenu.init();
     KTMenu.initHandlers();
+    KTMenu.initGlobalHandlerss();
 }
 
 function onModalComplete() {
@@ -53,6 +54,7 @@ function onModalComplete() {
 
 $(document).ready(function () {
 
+
     var message = $('#Message').text();
     if (message !== '') {
         showSuccessMessage(message);
@@ -61,19 +63,21 @@ $(document).ready(function () {
   dataTable=  $('table').DataTable({
         dom: 'Bfrtip',
         buttons: [
-            { extend: 'copy', text: '📋 Copy Table', className: 'btn btn-primary', exportOptions: { columns: [0, 1, 2, 3] } },
-            { extend: 'csv', text: '📁 Export CSV', className: 'btn btn-success', exportOptions: { columns: [0, 1, 2, 3] } }, // Added missing comma
+            //{ extend: 'copy', text: '📋 Copy Table', className: 'btn btn-primary', exportOptions: { columns: [0, 1, 2, 3] } },
+            //{ extend: 'csv', text: '📁 Export CSV', className: 'btn btn-success', exportOptions: { columns: [0, 1, 2, 3] } }, 
             { extend: 'excel', text: '📊 Download Excel', className: 'btn btn-info', exportOptions: { columns: [0, 1, 2, 3] } },
             { extend: 'pdf', text: '📄 Save as PDF', className: 'btn btn-danger', exportOptions: { columns: [0, 1, 2, 3] } },
-            { extend: 'print', text: '🖨️ Print View', className: 'btn btn-warning', exportOptions: { columns: [0, 1, 2, 3] } }
+        //    { extend: 'print', text: '🖨️ Print View', className: 'btn btn-warning', exportOptions: { columns: [0, 1, 2, 3] } }
         ]
     });
 
  
     //Handle bootstrap modal
     $('body').delegate('.js-render-modal', 'click', function () {
+
         var btn = $(this);
         var modal = $('#Modal');
+
 
         modal.find('#ModalLabel').text(btn.data('title'));
 
@@ -127,7 +131,7 @@ $(document).ready(function () {
                             row.find('.js-update-On').html(lastUpdateOn);
                             row.addClass('animate__animated animate__flash');
 
-                            showSuccessMessage();
+                            showSuccessMessage("");
 
                         },
                         error: function () {
@@ -160,7 +164,7 @@ $(document).ready(function () {
                     type: 'Delete',
                     success: () => {
                         dataTable.row(row).remove().draw(false); 
-                        showSuccessMessage();
+                        showSuccessMessage("Deleted successfully!");
                     },
                     error: showErrorMessage
                 });

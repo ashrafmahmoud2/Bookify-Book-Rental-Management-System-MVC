@@ -7,6 +7,8 @@ global using Bookify.Web.Core.Models;
 global using Bookify.Web.Filters;
 global using Microsoft.EntityFrameworkCore;
 global using System.Linq;
+global using Bookify.Web.Core.Consts;
+
 
 
 

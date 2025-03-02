@@ -5,7 +5,7 @@ using Microsoft.VisualBasic;
 namespace Bookify.Web.Core.Models;
 
 [Index(nameof(Name),IsUnique = true)]
-public class Category
+public class Category:BaseModel
 {
 
     public int Id { get; set; }
@@ -14,11 +14,6 @@ public class Category
     public string Name { get; set; } = null!;
 
 
-    public bool IsDeleted { get; set; }
-
-
-    public DateTime CreatedOn { get; set; } = DateTime.Now;
-
-    public DateTime?  LastUpdatedOn { get; set; }
+  
 
 }

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<BookViewModel>
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+@section Styles {
+    <partial name="_DataTabelsCSS" />
+}
+
+<div class="card shadow-sm  border border-primary border-2  ">
+    <div class="card-header">
+        <h3 class="card-title">
+            <div class="symbol symbol-35px me-2">
+                <div class="symbol-label fs-2 fw-semibold text-success"><i class="fas fa-pen-nib fs-3  me-2 text-primary"></i></div>
+            </div>
+            Books
+        </h3>
+        <div class="card-toolbar">
+            <a class="btn btn-sm btn-primary" asp-controller="Books" asp-action="Create">
+                Add
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="card shadow-sm my-10   ">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Puplisher</th>
+                        <th>PublishingDate</th>
+                        <th>Hall</th>
+                        <th>Rental</th>
+                        <th>Status</th>
+                        <th class="text-end pe-10">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var book in Model) //Assuming Model is an IEnumerable<YourDataType>
+                    {
+                        <partial name="_BookRow" model="book" />
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No data available.</p>
+        }
+
+    </div>
+</div>
+
+
+@section CustomScripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_DataTabelsJs" />
+}
+
+
+
+

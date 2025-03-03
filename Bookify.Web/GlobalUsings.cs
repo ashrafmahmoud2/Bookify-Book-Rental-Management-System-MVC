@@ -9,6 +9,11 @@ global using Microsoft.EntityFrameworkCore;
 global using System.Linq;
 global using Bookify.Web.Core.Consts;
 
+//View Models
+global using Bookify.Web.Core.ViewModel.Author;
+global using Bookify.Web.Core.ViewModel.Category;
+global using Bookify.Web.Core.ViewModel.Book;
+
 
 
 

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bookify.Web.Core.ViewModel.Author;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Web.Controllers;
+
+
 public class AuthorsController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -109,4 +112,3 @@ public class AuthorsController : Controller
         return Json(isAllowed);
     }
 }
-

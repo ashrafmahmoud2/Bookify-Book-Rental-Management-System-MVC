@@ -1,4 +1,6 @@
-﻿namespace Bookify.Web.Controllers;
+﻿using Bookify.Web.Core.ViewModel.Category;
+
+namespace Bookify.Web.Controllers;
 
 public class CategoriesController : Controller
 {

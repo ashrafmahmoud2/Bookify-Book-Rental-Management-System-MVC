@@ -1,6 +1,6 @@
-﻿namespace Bookify.Web.Core.ViewModel;
+﻿namespace Bookify.Web.Core.ViewModel.Category;
 
-public class AuthorViewModel
+public class CategoryViewModel
 {
     public int Id { get; set; }
 
@@ -10,6 +10,6 @@ public class AuthorViewModel
     public bool IsDeleted { get; set; }
 
 
-    public DateTime CreatedOn { get; set; } 
+    public DateTime CreatedOn { get; set; }
     public DateTime? LastUpdatedOn { get; set; }
 }

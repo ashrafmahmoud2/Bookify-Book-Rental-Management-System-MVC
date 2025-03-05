@@ -1,4 +1,5 @@
 ﻿using Bookify.Web.Core.ViewModel.Author;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bookify.Web.Controllers;
 
@@ -27,34 +28,48 @@ public class BooksController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        return View("Form");
+        var categories = _context.Categories.AsNoTracking().ToList();
+        var authors = _context.Authors.AsNoTracking().ToList();
+
+        var viewModel = new BookFormViewModel
+        {
+            Authors = authors.Select(a => new SelectListItem { Value = a.Id.ToString(), Text = a.Name }).ToList(),
+            Categories = categories.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList()
+        };
+
+        return View("Form", viewModel);
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Create(BookFormViewModel model)
     {
-        if (!ModelState.IsValid)
-            return BadRequest();
+        //stop in get whey he give me BadRequest whene create a book
 
-        var author = _mapper.Map<Author>(model);
-        _context.Add(author);
+
+
+        if (!ModelState.IsValid)
+        return BadRequest();
+
+        var book = _mapper.Map<Book>(model);
+        _context.Add(book);
         _context.SaveChanges();
 
-        var viewModel = _mapper.Map<BookViewModel>(author);
+        var viewModel = _mapper.Map<BookViewModel>(book);
 
-        return PartialView("_BookRow", viewModel);
+        return View("Form");
     }
 
     [HttpGet]
     public IActionResult Edit(int id)
     {
 
-        var author = _context.Books.FirstOrDefault(c => c.Id == id);
-        if (author is null)
+         var book = _context.Books.FirstOrDefault(c => c.Id == id);
+        if (book is null)
             return NotFound();
 
-        var viewModel = _mapper.Map<BookFormViewModel>(author);
+        var viewModel = _mapper.Map<BookFormViewModel>(book);
 
         return PartialView("Form", viewModel);
     }
@@ -68,15 +83,15 @@ public class BooksController : Controller
         if (!ModelState.IsValid)
             return BadRequest();
 
-        var author = _context.Books.FirstOrDefault(a => a.Id == model.Id);
-        if (author is null)
+         var book = _context.Books.FirstOrDefault(a => a.Id == model.Id);
+        if (book is null)
             return NotFound();
 
-        author = _mapper.Map(model, author);
-        author.LastUpdatedOn = DateTime.Now;
+        book = _mapper.Map(model, book );
+        book.LastUpdatedOn = DateTime.Now;
         _context.SaveChanges();
 
-        var viewModel = _mapper.Map<BookViewModel>(author);
+        var viewModel = _mapper.Map<BookViewModel>(book);
 
         return PartialView("_BookRow", viewModel);
     }
@@ -84,11 +99,11 @@ public class BooksController : Controller
     [HttpDelete]
     public IActionResult Delete(int id)
     {
-        var author = _context.Books.SingleOrDefault(a => a.Id == id);
-        if (author is null)
+         var book = _context.Books.SingleOrDefault(a => a.Id == id);
+        if (book is null)
             return NotFound();
 
-        _context.Books.Remove(author);
+        _context.Books.Remove(book);
         _context.SaveChanges();
 
         return NoContent();
@@ -97,11 +112,11 @@ public class BooksController : Controller
     [HttpPut]
     public IActionResult ToggleStatus(int id)
     {
-        var author = _context.Books.SingleOrDefault(a => a.Id == id);
-        if (author is null)
+         var book = _context.Books.SingleOrDefault(a => a.Id == id);
+        if (book is null)
             return NotFound();
 
-        author.IsDeleted = !author.IsDeleted;
+        book.IsDeleted = !book.IsDeleted;
         _context.SaveChanges();
 
         return NoContent();
@@ -109,8 +124,8 @@ public class BooksController : Controller
 
     public IActionResult AllowItem(BookFormViewModel model)
     {
-        var author = _context.Books.SingleOrDefault(a => a.Name == model.Name);
-        bool isAllowed = author is null || author.Id.Equals(model.Id);
+         var book = _context.Books.SingleOrDefault(a => a.Name == model.Name);
+        bool isAllowed = book is null || book.Id.Equals(model.Id);
 
         return Json(isAllowed);
     }

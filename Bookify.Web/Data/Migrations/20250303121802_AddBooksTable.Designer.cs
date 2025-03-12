@@ -93,7 +93,7 @@ namespace Bookify.Web.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRental")
+                    b.Property<bool>("IsAvailableForRental")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastUpdatedOn")

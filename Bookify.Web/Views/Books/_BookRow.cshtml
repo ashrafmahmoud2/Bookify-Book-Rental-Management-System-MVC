@@ -20,8 +20,8 @@
 	<td class="text-gray-900 text-hover-primary">@Model.PublishingDate.ToShortDateString()</td>
 	<td class="text-gray-900 text-hover-primary" >@Model.Hall</td>
 	<td>
-		<span class="js-status py-3 px-2  badge badge-light-@(@Model.IsRental? "danger": "success")">
-			@(@Model.IsRental ? "Rented" : "Available")
+		<span class="js-status py-3 px-2  badge badge-light-@(@Model.IsAvailableForRental? "danger": "success")">
+			@(@Model.IsAvailableForRental ? "Rented" : "Available")
 		</span>
 	</td>
 	<td>
@@ -41,10 +41,10 @@
 				</svg>
 			</span>
 		</a>
+
 		<div class="menu menu-sub menu-sub-dropdown w-100px py-4 text-center " data-kt-menu="true" id="kt_menu_@Model.Id">
 			<div class="menu-item px-3">
-				<a href="javascript:;" class="menu-link px-3 js-render-modal"
-				   data-title="Edit Author" data-url="Authors/Edit/@Model.Id" data-update="true">
+				<a class="menu-link px-3" asp-controller="Books" asp-action="Edit" asp-route-Id="@Model.Id">
 					Edit
 				</a>
 			</div>
@@ -66,7 +66,8 @@
 </tr>
 
 
-
+@* asp-action="@(Model.Id == 0 ? "Create" : "Edit")"
+ *@
 
 
 

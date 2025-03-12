@@ -1,7 +1,4 @@
-﻿using Bookify.Web.Core.Consts;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Bookify.Web.Core.ViewModel.Category;
+﻿namespace Bookify.Web.Core.ViewModel.Category;
 
 public class CategoryFormViewModel
 {

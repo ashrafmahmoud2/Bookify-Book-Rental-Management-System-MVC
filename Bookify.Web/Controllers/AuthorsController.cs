@@ -1,7 +1,4 @@
-﻿using Bookify.Web.Core.ViewModel.Author;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Bookify.Web.Controllers;
+﻿namespace Bookify.Web.Controllers;
 
 
 public class AuthorsController : Controller
@@ -77,13 +74,13 @@ public class AuthorsController : Controller
 
         return PartialView("_AuthorRow", viewModel);
     }
-  
+
     [HttpDelete]
     public IActionResult Delete(int id)
     {
         var author = _context.Authors.SingleOrDefault(a => a.Id == id);
         if (author is null)
-            return NotFound(); 
+            return NotFound();
 
         _context.Authors.Remove(author);
         _context.SaveChanges();
@@ -107,7 +104,7 @@ public class AuthorsController : Controller
     public IActionResult AllowItem(AuthorFormViewModel model)
     {
         var author = _context.Authors.SingleOrDefault(a => a.Name == model.Name);
-        bool isAllowed = author is null  || author.Id.Equals(model.Id);
+        bool isAllowed = author is null || author.Id.Equals(model.Id);
 
         return Json(isAllowed);
     }

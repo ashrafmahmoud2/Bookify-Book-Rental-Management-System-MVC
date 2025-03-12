@@ -10,7 +10,7 @@ public record BookViewModel(
     string Publisher,
     DateTime PublishingDate,
     string Hall,
-    bool IsRental,
+    bool IsAvailableForRental,
     string CategoryName,
     bool IsDeleted
 );

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -29,7 +28,7 @@ namespace Bookify.Web.Data.Migrations
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PublishingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Hall = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsRental = table.Column<bool>(type: "bit", nullable: false),
+                    IsAvailableForRental = table.Column<bool>(type: "bit", nullable: false),
                     AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorId = table.Column<int>(type: "int", nullable: false),
                     CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false),

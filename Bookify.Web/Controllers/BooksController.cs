@@ -1,12 +1,9 @@
-﻿using Bookify.Web.Core.ViewModel.Author;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace Bookify.Web.Controllers;
+﻿namespace Bookify.Web.Controllers;
 
 public class BooksController : Controller
 {
-    //https://preview.keenthemes.com/html/metronic/docs/index
-    //vidoeo linke: https://www.youtube.com/watch?v=nU5pPH-9icY&list=PL62tSREI9C-e98Y2PGnvJXONlFc56VNtZ&index=8;
+
+
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
@@ -17,8 +14,8 @@ public class BooksController : Controller
     }
     public IActionResult Index()
     {
-        var books = _context.Books.
-            Include(b => b.Category)
+        var books = _context.Books
+            //.Include(b => b.Category)
             .Include(b => b.Author)
             .AsNoTracking().ToList();
         var viewModal = _mapper.Map<IEnumerable<BookViewModel>>(books);
@@ -28,16 +25,19 @@ public class BooksController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        var categories = _context.Categories.AsNoTracking().ToList();
-        var authors = _context.Authors.AsNoTracking().ToList();
+        var categories = _context.Categories.Where(c => !c.IsDeleted).OrderBy(a => a.Name).AsNoTracking().ToList();
+        var authors = _context.Authors.Where(a => !a.IsDeleted).OrderBy(a => a.Name).AsNoTracking().ToList();
 
         var viewModel = new BookFormViewModel
         {
-            Authors = authors.Select(a => new SelectListItem { Value = a.Id.ToString(), Text = a.Name }).ToList(),
-            Categories = categories.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList()
+            //we do a mapping in MappingProfile for SelectListItem and categories and author to make key = id , value = name
+            Authors = _mapper.Map<IEnumerable<SelectListItem>>(authors),
+            Categories = _mapper.Map<IEnumerable<SelectListItem>>(categories),
         };
 
-        return View("Form", viewModel);
+        //return View("Form", viewModel);
+
+        return Ok();
     }
 
 
@@ -45,61 +45,66 @@ public class BooksController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(BookFormViewModel model)
     {
-        //stop in get whey he give me BadRequest whene create a book
-
 
 
         if (!ModelState.IsValid)
-        return BadRequest();
+            return BadRequest();
 
         var book = _mapper.Map<Book>(model);
+        book.ImageUrl = "https://example.com/pride_and_prejudice_cover.jpg";
         _context.Add(book);
         _context.SaveChanges();
 
         var viewModel = _mapper.Map<BookViewModel>(book);
 
-        return View("Form");
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
     public IActionResult Edit(int id)
     {
 
-         var book = _context.Books.FirstOrDefault(c => c.Id == id);
+        var book = _context.Books.Include(b => b.Author)
+            //.Include(b => b.Category)
+            .FirstOrDefault(c => c.Id == id);
         if (book is null)
             return NotFound();
 
         var viewModel = _mapper.Map<BookFormViewModel>(book);
 
-        return PartialView("Form", viewModel);
+        //viewModel.Authors = _context.Authors.Select(a => new SelectListItem { Value = a.Id.ToString(), Text = a.Name }).ToList();
+        //viewModel.Categories = _context.Categories.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList();
+
+
+        return View("Form", viewModel);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Edit(BookFormViewModel model)
     {
-
-        //stop in fix edit
         if (!ModelState.IsValid)
             return BadRequest();
 
-         var book = _context.Books.FirstOrDefault(a => a.Id == model.Id);
+        var book = _context.Books.Include(b => b.Author)
+            //.Include(b => b.Category)
+            .FirstOrDefault(c => c.Id == model.Id);
         if (book is null)
             return NotFound();
 
-        book = _mapper.Map(model, book );
+        book = _mapper.Map(model, book);
         book.LastUpdatedOn = DateTime.Now;
         _context.SaveChanges();
 
         var viewModel = _mapper.Map<BookViewModel>(book);
 
-        return PartialView("_BookRow", viewModel);
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpDelete]
     public IActionResult Delete(int id)
     {
-         var book = _context.Books.SingleOrDefault(a => a.Id == id);
+        var book = _context.Books.SingleOrDefault(a => a.Id == id);
         if (book is null)
             return NotFound();
 
@@ -112,7 +117,7 @@ public class BooksController : Controller
     [HttpPut]
     public IActionResult ToggleStatus(int id)
     {
-         var book = _context.Books.SingleOrDefault(a => a.Id == id);
+        var book = _context.Books.SingleOrDefault(a => a.Id == id);
         if (book is null)
             return NotFound();
 
@@ -124,9 +129,34 @@ public class BooksController : Controller
 
     public IActionResult AllowItem(BookFormViewModel model)
     {
-         var book = _context.Books.SingleOrDefault(a => a.Name == model.Name);
+        var book = _context.Books.SingleOrDefault(a => a.Title == model.Title);
         bool isAllowed = book is null || book.Id.Equals(model.Id);
 
         return Json(isAllowed);
     }
 }
+
+
+//model = new BookFormViewModel
+//        {
+//            Name = model.Name,
+//            Description = model.Description,
+//            Publisher = model.Publisher,
+//            //ImageUrl = "https://example.com/pride_and_prejudice_cover.jpg", // Replace with a real URL
+//            PublishingDate = model.PublishingDate,
+//            Hall = model.Hall,
+//            IsAvailableForRental = model.IsAvailableForRental,
+//            AuthorId = 3, // Assuming Jane Austen's ID is 1
+//            CategoryId = 104, // Assuming Romance category's ID is 2
+//            Authors = new List<SelectListItem>
+//            {
+//                new SelectListItem { Value = "1", Text = "Jane Austen" },
+//                // Add other potential authors if needed
+//            },
+//            Categories = new List<SelectListItem>
+//            {
+//                new SelectListItem { Value = "2", Text = "Romance" },
+//                new SelectListItem { Value = "3", Text = "Classic Literature" }
+//                // Add other potential categories if needed
+//            }
+//        };

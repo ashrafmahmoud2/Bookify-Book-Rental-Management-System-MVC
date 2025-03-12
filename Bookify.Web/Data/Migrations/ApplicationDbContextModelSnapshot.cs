@@ -62,9 +62,6 @@ namespace Bookify.Web.Data.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -77,21 +74,16 @@ namespace Bookify.Web.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailableForRental")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRental")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("LastUpdatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Publisher")
                         .IsRequired()
@@ -100,16 +92,33 @@ namespace Bookify.Web.Data.Migrations
                     b.Property<DateTime>("PublishingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("Name")
+                    b.HasIndex("Title", "AuthorId")
                         .IsUnique();
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("Bookify.Web.Core.Models.BookCategory", b =>
+                {
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BookId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("BookCategories");
                 });
 
             modelBuilder.Entity("Bookify.Web.Core.Models.Category", b =>
@@ -352,13 +361,24 @@ namespace Bookify.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Bookify.Web.Core.Models.BookCategory", b =>
+                {
+                    b.HasOne("Bookify.Web.Core.Models.Book", "Book")
+                        .WithMany("Categories")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Bookify.Web.Core.Models.Category", "Category")
                         .WithMany("Books")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Author");
+                    b.Navigation("Book");
 
                     b.Navigation("Category");
                 });
@@ -417,6 +437,11 @@ namespace Bookify.Web.Data.Migrations
             modelBuilder.Entity("Bookify.Web.Core.Models.Author", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("Bookify.Web.Core.Models.Book", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Bookify.Web.Core.Models.Category", b =>

@@ -1,12 +1,11 @@
 ﻿@model BookFormViewModel
 
 @{
-
-	ViewData["Title"] = "Create Book";
-
+	var titlePrefix = Model.Id.Equals(0) ? "Create" : "Edit";
+	ViewData["Title"] = $"{titlePrefix} Book";
 }
 
-
+<h1>the modal now is : @titlePrefix Book  with book id : @Model.Id with name : @Model.Title</h1>
 
 
 <div class="row">
@@ -29,10 +28,11 @@
 						}
 					</style>
 					<div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3 bg-light" data-kt-image-input="true">
-						<div class="image-input-wrapper w-150px h-150px"></div>
+						<div class="image-input-wrapper w-150px h-150px">
+						</div>
 						<label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change avatar" data-bs-original-title="Change avatar" data-kt-initialized="1">
 							<i class="fa-solid fa-plus"></i><span class="path1"></span><span class="path2"></span></i>
-							<input type="file" name="avatar" accept=".png, .jpg, .jpeg">
+							<input type="file" name="ImageFile" accept=".png, .jpg, .jpeg">
 							<input type="hidden" name="avatar_remove">
 						</label>
 						<span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" aria-label="Cancel avatar" data-bs-original-title="Cancel avatar" data-kt-initialized="1">
@@ -56,13 +56,13 @@
 				</div>
 				<div class="card-body">
 
-					<form asp-controller="Books" asp-action="Create" method="post" enctype="multipart/form-data" class="row g-3">
+					<form method="post" asp-controller="Books" enctype="multipart/form-data" class="row g-3">
 						@Html.AntiForgeryToken()
 
 						<div class="col-md-6">
 							<label for="inputTitle" class="form-label">Title</label>
-							<input asp-for="Name" placeholder="Enter title" class="form-control bg-light">
-							<span asp-validation-for="Name" class="text-danger"></span>
+							<input asp-for="Title" placeholder="Enter title" class="form-control bg-light">
+							<span asp-validation-for="Title" class="text-danger"></span>
 						</div>
 
 						<div class="col-md-6">
@@ -73,19 +73,19 @@
 
 						<div class="col-md-6">
 							<label for="inputauthor" class="form-label">author</label>
-							<select asp-for="AuthorId" asp-items="Model.Authors" class="form-control bg-light">
+							<select asp-for="AuthorId" asp-items="@Model.Authors" class="form-control bg-light">
 								<option value="">select an author</option>
 							</select>
 							<span asp-validation-for="AuthorId" class="text-danger"></span>
 						</div>
 
-						<div class="col-md-6">
+					@* 	<div class="col-md-6">
 							<label for="inputCategory" class="form-label">Category</label>
 							<select asp-for="CategoryId" asp-items="Model.Categories" class="form-control bg-light">
 								<option value="">Select a category</option>
 							</select>
 							<span asp-validation-for="CategoryId" class="text-danger"></span>
-						</div>
+						</div> *@
 
 
 						<div class="col-md-5">
@@ -102,7 +102,7 @@
 
 						<div class="col-md-2 mt-15">
 							<label for="inputAvailable" class="form-label ms-5">Available?</label>
-							<input asp-for="IsRental" type="checkbox" class="form-check-input ">
+							<input asp-for="IsAvailableForRental" type="checkbox" class="form-check-input ">
 						</div>
 
 						<div class="col-md-12">
@@ -129,10 +129,5 @@
 @section CustomScripts {
 	<partial name="_ValidationScriptsPartial" />
 }
-
-
-
-
-
 
 

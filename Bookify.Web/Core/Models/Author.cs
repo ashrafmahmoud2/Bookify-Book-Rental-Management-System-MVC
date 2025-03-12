@@ -2,7 +2,7 @@
 
 
 [Index(nameof(Name), IsUnique = true)]
-public class Author:BaseModel
+public class Author : BaseModel
 {
     public int Id { get; set; }
 

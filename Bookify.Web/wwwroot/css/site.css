@@ -97,3 +97,9 @@ div.dataTables_filter {
 
 
 
+.tox-promotion-link{
+    display:none;
+    background-color:red;
+}
+
+

@@ -1,133 +1,133 @@
 ﻿@model BookFormViewModel
 
 @{
-	var titlePrefix = Model.Id.Equals(0) ? "Create" : "Edit";
-	ViewData["Title"] = $"{titlePrefix} Book";
+    var titlePrefix = Model.Id == 0 ? "Create" : "Edit";
+
+    ViewData["Title"] = $"{titlePrefix} Book";
 }
 
-<h1>the modal now is : @titlePrefix Book  with book id : @Model.Id with name : @Model.Title</h1>
 
+
+@* <div class="col-md-5">
+    <div class="mb-5">
+        <div>
+            <img id="ImagePreview" src="~/images/books/@(Model.ImageUrl is null ? "no-book.jpg" : Model.ImageUrl)" class="img-thumbnail" alt="Book Image">
+        </div>
+        <div class="form-floating mb-2">
+            <input type="file" class="form-control" placeholder="Image" asp-for="Image" accept=".jpg,.jpeg,.png"
+                   onchange="document.getElementById('ImagePreview').src = window.URL.createObjectURL(this.files[0])" />
+            <label asp-for="Image"></label>
+        </div>
+        <span asp-validation-for="Image" class="text-danger d-block"></span>
+    </div>
+</div> *@
 
 <div class="row">
-	<div class="col-md-3">
-		<div class="row1">
-			<div class="card card-flush py-4">
-				<div class="card-header">
-					<div class="card-title">
-						<h2>Thumbnail</h2>
-					</div>
-				</div>
-				<div class="card-body text-center pt-0 ">
-					<style>
-						.image-input-placeholder {
-							background-image: url('/metronic8/demo1/assets/media/svg/files/blank-image.svg');
-						}
+    <div class="col-md-3">
+        <div class="card card-flush py-4">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2>Book Cover</h2>
+                </div>
+            </div>
+            <div class="card-body text-center pt-0">
+                <div class="image-input image-input-outline mb-3 bg-light" data-kt-image-input="true">
+                    <div class="image-input-wrapper w-150px h-150px" style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc5VtDElo-vbH6jE2tM2jzgGNw7hygWblcr8cdefITrS4pdkh7GaAEIL-hPCrHzL1WHDs&usqp=CAU" : $"/images/books/{Model.ImageUrl}")');">
+                    </div>
+                    <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change image">
+                        <i class="fa-solid fa-plus"></i>
+                        <input id="imageUrl-value" @* asp-for="Image" *@ type="file" accept=".png, .jpg, .jpeg">
+                    </label>
+                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image">
+                        <i class="fa-solid fa-xmark"></i>
+                    </span>
+                </div>
+                <div class="text-muted fs-7">Allowed formats: .png, .jpg, .jpeg (Max: 2MB)</div>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title">@titlePrefix Book</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-controller="Books" enctype="multipart/form-data" class="row g-3">
+                    @if (Model.Id > 0)
 
-						[data-bs-theme="dark"] .image-input-placeholder {
-							background-image: url('/metronic8/demo1/assets/media/svg/files/blank-image-dark.svg');
-						}
-					</style>
-					<div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3 bg-light" data-kt-image-input="true">
-						<div class="image-input-wrapper w-150px h-150px">
-						</div>
-						<label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change avatar" data-bs-original-title="Change avatar" data-kt-initialized="1">
-							<i class="fa-solid fa-plus"></i><span class="path1"></span><span class="path2"></span></i>
-							<input type="file" name="ImageFile" accept=".png, .jpg, .jpeg">
-							<input type="hidden" name="avatar_remove">
-						</label>
-						<span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" aria-label="Cancel avatar" data-bs-original-title="Cancel avatar" data-kt-initialized="1">
-							<i class="fa-solid fa-xmark"></i><span class="path1"></span><span class="path2"></span></i>
-						</span>
-						<span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" aria-label="Remove avatar" data-bs-original-title="Remove avatar" data-kt-initialized="1">
-							<i class="fa-solid fa-xmark"></i><span class="path1"></span><span class="path2"></span></i>
-						</span>
-					</div>
-					<div class="text-muted fs-7">Set the product thumbnail image. Only *.png, *.jpg and *.jpeg image files are accepted</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    {
+                        <input type="hidden" asp-for="Id" />
+                    }
+                    <div class="col-md-6">
+                        <label class="form-label">Title</label>
+                        <input asp-for="Title" placeholder="Enter title" class="form-control bg-light">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Publisher</label>
+                        <input asp-for="Publisher" placeholder="Enter publisher" class="form-control bg-light">
+                        <span asp-validation-for="Publisher" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Author</label>
+                        <select asp-for="AuthorId" asp-items="@Model.Authors" data-placeholder="Select an author" class="form-control bg-light js-select2">
+                            <option value="">Select an author</option>
+                        </select>
+                        <span asp-validation-for="AuthorId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Category</label>
+                        <select asp-for="SelectedCategories" asp-items="Model.Categories" data-placeholder="Select a category" class="form-control bg-light js-select2">
+                            <option value="">Select a category</option>
+                        </select>
+                        <span asp-validation-for="SelectedCategories" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Hall</label>
+                        <input asp-for="Hall" placeholder="Enter hall" class="form-control bg-light">
+                        <span asp-validation-for="Hall" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Publishing Date</label>
+                        <input asp-for="PublishingDate" type="date" class="form-control bg-light js-flatpickr">
+                        <span asp-validation-for="PublishingDate" class="text-danger"></span>
+                    </div>  
+           
 
-	<div class="col-md-9">
-		<div class="row2">
-			<div class="card shadow-sm">
-				<div class="card-header">
-					<h3 class="card-title">Create Book</h3>
-				</div>
-				<div class="card-body">
+                    <div class="col-md-2 mt-4 text-center">
+                        <label class="form-label">Available?</label>
+                        <input asp-for="IsAvailableForRental" type="checkbox" class="form-check-input">
+                    </div>
 
-					<form method="post" asp-controller="Books" enctype="multipart/form-data" class="row g-3">
-						@Html.AntiForgeryToken()
-
-						<div class="col-md-6">
-							<label for="inputTitle" class="form-label">Title</label>
-							<input asp-for="Title" placeholder="Enter title" class="form-control bg-light">
-							<span asp-validation-for="Title" class="text-danger"></span>
-						</div>
-
-						<div class="col-md-6">
-							<label for="inputPublisher" class="form-label">Publisher</label>
-							<input asp-for="Publisher" placeholder="Enter publisher" class="form-control bg-light">
-							<span asp-validation-for="Publisher" class="text-danger"></span>
-						</div>
-
-						<div class="col-md-6">
-							<label for="inputauthor" class="form-label">author</label>
-							<select asp-for="AuthorId" asp-items="@Model.Authors" class="form-control bg-light">
-								<option value="">select an author</option>
-							</select>
-							<span asp-validation-for="AuthorId" class="text-danger"></span>
-						</div>
-
-					@* 	<div class="col-md-6">
-							<label for="inputCategory" class="form-label">Category</label>
-							<select asp-for="CategoryId" asp-items="Model.Categories" class="form-control bg-light">
-								<option value="">Select a category</option>
-							</select>
-							<span asp-validation-for="CategoryId" class="text-danger"></span>
-						</div> *@
+                    <div class="col-md-12">
+                        <label class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control bg-light js-tinymce" placeholder="Enter description" style="height: 100px"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <!-- Hidden input to store image URL inside the form -->
+                    <input type="hidden" asp-for="Image" value="fileName" id="hiddenImageUrl" />
 
 
-						<div class="col-md-5">
-							<label for="inputHall" class="form-label">Hall</label>
-							<input asp-for="Hall" placeholder="Enter hall" class="form-control bg-light">
-							<span asp-validation-for="Hall" class="text-danger"></span>
-						</div>
-
-						<div class="col-md-5">
-							<label for="inputPublishingDate" class="form-label">Publishing Date</label>
-							<input asp-for="PublishingDate" type="date" class="form-control bg-light">
-							<span asp-validation-for="PublishingDate" class="text-danger"></span>
-						</div>
-
-						<div class="col-md-2 mt-15">
-							<label for="inputAvailable" class="form-label ms-5">Available?</label>
-							<input asp-for="IsAvailableForRental" type="checkbox" class="form-check-input ">
-						</div>
-
-						<div class="col-md-12">
-							<label for="floatingTextarea2">Description</label>
-							<textarea asp-for="Description" class="form-control bg-light" placeholder="Enter description" style="height: 100px"></textarea>
-							<span asp-validation-for="Description" class="text-danger"></span>
-						</div>
-
-						<div class="col-12">
-							<button type="submit" class="btn btn-primary">Save</button>
-						</div>
-					</form>
-
-				</div>
-			</div>
-		</div>
-	</div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/tinymce/tinymce.min.js"></script>
 
-@section CustomScripts {
-	<partial name="_ValidationScriptsPartial" />
 }
+
+
+
 
 

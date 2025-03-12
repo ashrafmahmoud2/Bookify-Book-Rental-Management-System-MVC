@@ -3,7 +3,6 @@
 [Index(nameof(Title), nameof(AuthorId), IsUnique = true)]
 public class Book : BaseModel
 {
-
     public int Id { get; set; }
 
     public string Title { get; set; } = null!;
@@ -23,9 +22,6 @@ public class Book : BaseModel
     public int AuthorId { get; set; }
 
     public Author? Author { get; set; }
-
-    //public int CategoryId { get; set; }
-    //public Category Category { get; set; } = null!;
 
 
     public ICollection<BookCategory> Categories { get; set; } = new List<BookCategory>();

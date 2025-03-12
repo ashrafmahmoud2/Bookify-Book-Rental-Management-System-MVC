@@ -16,6 +16,9 @@
 	<link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
 	<link href="~/lib/toastify-js/toastify.min.css" rel="stylesheet" />
 	<link href="~/lib/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" />
+	<link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
+	<link href="~/lib/flatpickr/flatpickr.min.css" rel="stylesheet" />
+
 	@await RenderSectionAsync("Styles", required: false)
 
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -73,16 +76,23 @@
 	<span id="Message" class="d-none">@TempData["Message"]</span>
 	<partial name="_Modal" />
 	<script>var hostUrl = "assets/";</script>
-	<!--begin::Global Javascript Bundle(used by all pages)-->
+
+	<!-- Global JavaScript Bundle -->
 	<script src="~/assets/js/plugins.bundle.js"></script>
 	<script src="~/assets/js/scripts.bundle.js"></script>
 	<script src="~/lib/bootbox.js/bootbox.min.js"></script>
 	<script src="~/lib/toastr.js/toastr.min.js"></script>
 	<script src="~/lib/toastify-js/toastify.min.js"></script>
 	<script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+	<script src="~/lib/select2/js/select2.min.js"></script>
+	<script src="~/lib/flatpickr/flatpickr.min.js"></script>
+
+	<!-- Render Sections -->
+	@await RenderSectionAsync("tinymce", required: false)
 	@await RenderSectionAsync("CustomScripts", required: false)
-	<!--end::Global Javascript Bundle-->
-	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
+
+	<!-- Site JS -->
+	<script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

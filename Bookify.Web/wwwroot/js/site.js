@@ -54,25 +54,57 @@ function onModalComplete() {
 
 $(document).ready(function () {
 
+    //tinymce
+    tinymce.init({
+        selector: ".js-tinymce",
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        plugins: [
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+        ],
+        setup: function (editor) {
+            editor.on('init', function () {
+                document.querySelector('.tox-promotion').style.display = 'none';
+                document.querySelector('.tox-statusbar__branding').style.display = 'none';
+            });
+        }
+    });
 
-    var message = $('#Message').text();
-    if (message !== '') {
-        showSuccessMessage(message);
-    }
-
-  dataTable=  $('table').DataTable({
+    //DataTable
+    dataTable = $('table').DataTable({
         dom: 'Bfrtip',
         buttons: [
             //{ extend: 'copy', text: '📋 Copy Table', className: 'btn btn-primary', exportOptions: { columns: [0, 1, 2, 3] } },
             //{ extend: 'csv', text: '📁 Export CSV', className: 'btn btn-success', exportOptions: { columns: [0, 1, 2, 3] } }, 
             { extend: 'excel', text: '📊 Download Excel', className: 'btn btn-info', exportOptions: { columns: [0, 1, 2, 3] } },
             { extend: 'pdf', text: '📄 Save as PDF', className: 'btn btn-danger', exportOptions: { columns: [0, 1, 2, 3] } },
-        //    { extend: 'print', text: '🖨️ Print View', className: 'btn btn-warning', exportOptions: { columns: [0, 1, 2, 3] } }
+            //    { extend: 'print', text: '🖨️ Print View', className: 'btn btn-warning', exportOptions: { columns: [0, 1, 2, 3] } }
         ]
     });
 
- 
-    //Handle bootstrap modal
+    //js-select2
+    $('.js-select2').select2({
+
+    });
+
+    //flatpickr
+    $('.js-flatpickr').flatpickr({
+        defaultDate: new Date().toISOString().split('T')[0],
+        minDate: "1/1/2022",
+        maxDate: "1/1/2026",
+        monthSelectorType:"static"
+
+    });
+
+
+
+    var message = $('#Message').text();
+    if (message !== '') {
+        showSuccessMessage(message);
+    }
+
+
+    //Handle Add and update
     $('body').delegate('.js-render-modal', 'click', function () {
 
         var btn = $(this);
@@ -147,6 +179,7 @@ $(document).ready(function () {
 
     // Handle Delete
     $('body').on('click', '.js-delete', function () {
+        prompt("arrive")
         let btn = $(this);
         let row = btn.closest('tr');
 
@@ -163,7 +196,7 @@ $(document).ready(function () {
                     url: btn.data('url'),
                     type: 'Delete',
                     success: () => {
-                        dataTable.row(row).remove().draw(false); 
+                        dataTable.row(row).remove().draw(false);
                         showSuccessMessage("Deleted successfully!");
                     },
                     error: showErrorMessage
@@ -171,6 +204,8 @@ $(document).ready(function () {
             }
         });
     });
+
+
 
 });
 

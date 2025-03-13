@@ -1,4 +1,6 @@
-﻿namespace Bookify.Web.Core.ViewModel.Book;
+﻿using UoN.ExpressiveAnnotations.NetCore.Attributes;
+
+namespace Bookify.Web.Core.ViewModel.Book;
 
 public class BookFormViewModel : BaseModel
 {
@@ -19,6 +21,7 @@ public class BookFormViewModel : BaseModel
     public string Publisher { get; set; } = null!;
 
     [Display(Name = "Publishing Date")]
+    [AssertThat("PublishingDate <= Now()",ErrorMessage =Errors.FutureDateNotAllowed)]
     public DateTime PublishingDate { get; set; } =DateTime.Now; //to be a default value in the view;
 
     public IFormFile? Image  { get; set; } = null!;

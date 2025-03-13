@@ -54,6 +54,12 @@ function onModalComplete() {
 
 $(document).ready(function () {
 
+    //js-select2
+    $('.js-select2').select2({
+
+    });
+
+
     //tinymce
     tinymce.init({
         selector: ".js-tinymce",
@@ -82,11 +88,7 @@ $(document).ready(function () {
         ]
     });
 
-    //js-select2
-    $('.js-select2').select2({
-
-    });
-
+   
     //flatpickr
     $('.js-flatpickr').flatpickr({
         defaultDate: new Date().toISOString().split('T')[0],

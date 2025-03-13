@@ -1,29 +1,36 @@
 ﻿using Bookify.Web.Core.Models;
+using Bookify.Web.Settings;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.Extensions.Options;
 
 namespace Bookify.Web.Controllers;
 
 public class BooksController : Controller
 {
-
     //stop in 14/10
-    //fix the override prople of tinmcey and datatables
-
-
-
+    //feat : Add to alllow to host image in cloude using Cloudinary,
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
-
-
+    private readonly Cloudinary _cloudinary;
 
     private List<string> _allowedExtensions = new() { ".jpg", ".jpeg", ".png" };
     private int _maxAllowedSize = 2097152;
 
-    public BooksController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+    public BooksController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySettings> cloudinary)
     {
         _context = context;
         _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
+        Account account = new()
+        {
+            Cloud = cloudinary.Value.Cloud,
+            ApiKey = cloudinary.Value.ApiKey,
+            ApiSecret = cloudinary.Value.ApiSecret,
+        };
+
+        _cloudinary = new Cloudinary(account);
     }
     public IActionResult Index()
     {
@@ -42,7 +49,7 @@ public class BooksController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(BookFormViewModel model)
+    public async Task<IActionResult> Create(BookFormViewModel model)
     {
         if (!ModelState.IsValid)
             return View("Form", PopulateViewModel(model));
@@ -67,12 +74,36 @@ public class BooksController : Controller
 
             var imageName = $"{Guid.NewGuid()}{extension}";
 
-            var path = Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books", imageName);
+            //var path = Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books", imageName);
 
-            using var stream = System.IO.File.Create(path);
-            model.Image.CopyTo(stream);
+            //using var stream = System.IO.File.Create(path);
+            //await model.Image.CopyToAsync(stream);
 
-            book.ImageUrl = imageName;
+            //book.ImageUrl = imageName;
+
+            using var stream = model.Image.OpenReadStream();
+
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(imageName, stream),
+                UseFilename=true,
+                Folder = "books", 
+                PublicId = Guid.NewGuid().ToString(),
+                Overwrite = false,
+            };
+
+            //this will Upload the path of image in cloudinary
+            var Result = await _cloudinary.UploadAsync(uploadParams);
+
+            if (Result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                ModelState.AddModelError(nameof(model.Image), "Image upload failed.");
+                return View("Form", PopulateViewModel(model));
+            }
+
+            book.ImageUrl = Result.SecureUrl.ToString();
+            book.ImageThumbnailUrl = GetThumbnailUrl(book.ImageUrl);
+            book.ImagePublicId= Result.PublicId;
         }
 
         foreach (var category in model.SelectedCategories)
@@ -104,7 +135,7 @@ public class BooksController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(BookFormViewModel model)
+    public async Task<IActionResult> Edit(BookFormViewModel model)
     {
         if (!ModelState.IsValid)
             return View("Form", PopulateViewModel(model));
@@ -114,14 +145,18 @@ public class BooksController : Controller
         if (book is null)
             return NotFound();
 
+        string imagePuplicId = null;
         if (model.Image is not null)
         {
+            // Delete old image if exists
             if (!string.IsNullOrEmpty(book.ImageUrl))
             {
-                var oldImagePath = Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books", book.ImageUrl);
+                //var oldImagePath = Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books", book.ImageUrl);
 
-                if (System.IO.File.Exists(oldImagePath))
-                    System.IO.File.Delete(oldImagePath);
+                //if (System.IO.File.Exists(oldImagePath))
+                //    System.IO.File.Delete(oldImagePath);
+
+                await _cloudinary.DeleteResourcesAsync(book.ImagePublicId);
             }
 
             var extension = Path.GetExtension(model.Image.FileName);
@@ -140,19 +175,45 @@ public class BooksController : Controller
 
             var imageName = $"{Guid.NewGuid()}{extension}";
 
-            var path = Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books", imageName);
+            //var path = Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books", imageName);
 
-            using var stream = System.IO.File.Create(path);
-            model.Image.CopyTo(stream);
+            //using var stream = System.IO.File.Create(path);
+            //await model.Image.CopyToAsync(stream);
 
-            model.ImageUrl = imageName;
+            //model.ImageUrl = imageName;
+
+            using var stream = model.Image.OpenReadStream();
+
+                 var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(imageName, stream),
+                UseFilename = true,
+                Folder = "books",
+                PublicId = Guid.NewGuid().ToString(),
+                Overwrite = false,
+            };
+
+            //this will Upload the path of image in cloudinary
+            var result = await _cloudinary.UploadAsync(uploadParams);
+
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                ModelState.AddModelError(nameof(model.Image), "Image upload failed.");
+                return View("Form", PopulateViewModel(model));
+            }
+
+            model.ImageUrl= result.SecureUrl.ToString();
+            imagePuplicId = result.PublicId;
+
         }
 
-        else if (model.Image is null && !string.IsNullOrEmpty(book.ImageUrl))
+        else if (!string.IsNullOrEmpty(book.ImageUrl))
             model.ImageUrl = book.ImageUrl;
 
         book = _mapper.Map(model, book);
         book.LastUpdatedOn = DateTime.Now;
+        book.ImageThumbnailUrl = GetThumbnailUrl(book.ImageUrl);
+        book.ImagePublicId = imagePuplicId;
 
         foreach (var category in model.SelectedCategories)
             book.Categories.Add(new BookCategory { CategoryId = category });
@@ -208,5 +269,15 @@ public class BooksController : Controller
         return NoContent();
     }
 
+
+    private string GetThumbnailUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url) || !url.Contains("/upload/"))
+            return url;
+
+        return url.Replace("/upload/", "/upload/c_thumb,w_200,g_face/");
+    }
+
 }
+
 

@@ -12,6 +12,8 @@ public class Book : BaseModel
     public string Publisher { get; set; } = null!;
 
     public string? ImageUrl { get; set; }
+    public string? ImageThumbnailUrl { get; set; }
+    public string? ImagePublicId { get; set; } // This is the image ID in the cloud, used for deletion or updates.  
 
     public DateTime PublishingDate { get; set; }
 

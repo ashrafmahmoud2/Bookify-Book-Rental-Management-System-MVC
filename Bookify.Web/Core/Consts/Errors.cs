@@ -11,6 +11,7 @@ public class Errors
     public const string NotAllowedExtension = "NotAllowedExtension";
     public const string MaxSize = "MaxSize";
 
+    public const string FutureDateNotAllowed = "Publishing date cannot be in the future.";
 
 
 }

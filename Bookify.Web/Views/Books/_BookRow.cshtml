@@ -7,7 +7,9 @@
 	<td>
 		<div class="d-flex align-items-center">
 			<div class="symbol symbol-50px me-3">
-				<img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://media.istockphoto.com/id/1220490886/vector/vector-no-book-or-reading-sign-illustration.jpg?s=612x612&w=0&k=20&c=RjYeTmuqCH1Jk3MRKUfxFA7ktBYBzDKcbQd55Juj9PQ=" : $"/images/books/{Model.ImageUrl}")"
+				<img src="@(string.IsNullOrEmpty(Model.ImageThumbnailUrl) ?
+"https://media.istockphoto.com/id/1220490886/vector/vector-no-book-or-reading-sign-illustration.jpg?s=612x612&w=0&k=20&c=RjYeTmuqCH1Jk3MRKUfxFA7ktBYBzDKcbQd55Juj9PQ=" 
+          : @Model.ImageThumbnailUrl)"
 					 class="img-fluid"
 					 alt="Book Cover">
 			</div>

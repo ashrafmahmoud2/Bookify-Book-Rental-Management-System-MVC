@@ -8,19 +8,6 @@
 
 
 
-@* <div class="col-md-5">
-    <div class="mb-5">
-        <div>
-            <img id="ImagePreview" src="~/images/books/@(Model.ImageUrl is null ? "no-book.jpg" : Model.ImageUrl)" class="img-thumbnail" alt="Book Image">
-        </div>
-        <div class="form-floating mb-2">
-            <input type="file" class="form-control" placeholder="Image" asp-for="Image" accept=".jpg,.jpeg,.png"
-                   onchange="document.getElementById('ImagePreview').src = window.URL.createObjectURL(this.files[0])" />
-            <label asp-for="Image"></label>
-        </div>
-        <span asp-validation-for="Image" class="text-danger d-block"></span>
-    </div>
-</div> *@
 
 <div class="row">
     <div class="col-md-3">
@@ -32,8 +19,12 @@
             </div>
             <div class="card-body text-center pt-0">
                 <div class="image-input image-input-outline mb-3 bg-light" data-kt-image-input="true">
-                    <div class="image-input-wrapper w-150px h-150px" style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc5VtDElo-vbH6jE2tM2jzgGNw7hygWblcr8cdefITrS4pdkh7GaAEIL-hPCrHzL1WHDs&usqp=CAU" : $"/images/books/{Model.ImageUrl}")');">
+                    <div class="image-input-wrapper w-150px h-150px"
+                         style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrl)
+         ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc5VtDElo-vbH6jE2tM2jzgGNw7hygWblcr8cdefITrS4pdkh7GaAEIL-hPCrHzL1WHDs&usqp=CAU"
+         : Model.ImageUrl)');">
                     </div>
+
                     <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change image">
                         <i class="fa-solid fa-plus"></i>
                         <input id="imageUrl-value" @* asp-for="Image" *@ type="file" accept=".png, .jpg, .jpeg">
@@ -100,14 +91,31 @@
                         <input asp-for="IsAvailableForRental" type="checkbox" class="form-check-input">
                     </div>
 
+
+
+                    <div class="col-md-5">
+                    <div class="mb-5">
+                    <div>
+                                <img id="ImagePreview"
+                                     src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "no-book.jpg" : Model.ImageUrl)"
+                                     class="img-thumbnail"
+                                     alt="Book Image">
+                            </div>
+                    <div class="form-floating mb-2">
+                    <input type="file" class="form-control" placeholder="Image" asp-for="Image" accept=".jpg,.jpeg,.png"
+                    onchange="document.getElementById('ImagePreview').src = window.URL.createObjectURL(this.files[0])" />
+                    <label asp-for="Image"></label>
+                    </div>
+                    <span asp-validation-for="Image" class="text-danger d-block"></span>
+                    </div>
+                    </div>
+
                     <div class="col-md-12">
                         <label class="form-label">Description</label>
                         <textarea asp-for="Description" class="form-control bg-light js-tinymce" placeholder="Enter description" style="height: 100px"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
-                    <!-- Hidden input to store image URL inside the form -->
-                    <input type="hidden" asp-for="Image" value="fileName" id="hiddenImageUrl" />
-
+                  
 
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">Save</button>

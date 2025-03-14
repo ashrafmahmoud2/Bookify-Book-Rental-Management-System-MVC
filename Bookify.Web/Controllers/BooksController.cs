@@ -8,8 +8,8 @@ namespace Bookify.Web.Controllers;
 
 public class BooksController : Controller
 {
-    //stop in 14/10
-    //feat : Add to alllow to host image in cloude using Cloudinary,
+    //16/5
+   
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;

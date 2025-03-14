@@ -103,3 +103,17 @@ div.dataTables_filter {
 }
 
 
+/*select2*/
+.js-select2 {
+    height: 42.3px !important;
+}
+
+
+
+/*TinyMCE*/
+.tox-promotion,
+.tox-statusbar__branding {
+    display : none;
+}
+
+

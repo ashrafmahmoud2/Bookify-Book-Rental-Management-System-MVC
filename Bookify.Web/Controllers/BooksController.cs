@@ -8,7 +8,7 @@ namespace Bookify.Web.Controllers;
 
 public class BooksController : Controller
 {
-    //16/5
+    //16/7
    
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;

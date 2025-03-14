@@ -1,11 +1,22 @@
 ﻿var updatedRow;
 var dataTable;
 
-function onModalBegin() {
+
+
+function dissableSubmitButtonInModal() {
     let submitButton = $('#Modal :submit');
     submitButton.prop('disabled', true);
     submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
+}
 
+function disableSubmitButtonInForm() {   
+    let submitButton = $('.submit-from-btn');
+    submitButton.prop('disabled', true);
+    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
+}
+
+function onModalBegin() {
+    dissableSubmitButtonInModal();
 }
 
 function showSuccessMessage(message = 'Saved successfully!') {
@@ -54,12 +65,35 @@ function onModalComplete() {
 
 $(document).ready(function () {
 
+    $('form').on('submit', function () {
+        if ($('.js-tinymce').length > 0) 
+        {
+            $('.js-tinymce').each(function () {
+                var input = $(this);
+                var editorId = input.attr('id'); // Get the ID of the textarea
+                if (editorId) { // Ensure ID exists to avoid errors
+                    var content = tinymce.get(editorId).getContent(); // Get TinyMCE content
+                    input.val(content); // Set it back to the textarea
+                }
+            });
+        }
+        var valid = $(this).valid(); 
+        if (valid) disableSubmitButtonInForm();
+         
+    });
+
+ 
+
+
+
     //js-select2
     $('.js-select2').select2();
 
     $('.js-select2').on('select2:select', function (e) {
         $('form').validate().element('#' + $(this).attr('id'));
     });
+
+
 
 
     //TinyMCE only if the page has an element with class .js-tinymce

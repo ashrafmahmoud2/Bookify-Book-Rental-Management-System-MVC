@@ -77,8 +77,8 @@ $(document).ready(function () {
                 }
             });
         }
-        var valid = $(this).valid(); 
-        if (valid) disableSubmitButtonInForm();
+        //var valid = $(this).valid(); 
+        //if (valid) disableSubmitButtonInForm();
          
     });
 

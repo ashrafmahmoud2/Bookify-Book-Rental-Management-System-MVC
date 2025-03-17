@@ -9,7 +9,9 @@ namespace Bookify.Web.Controllers;
 public class BooksController : Controller
 {
     //16/7
-   
+    //  https://preview.keenthemes.com/metronic8/demo1/pages/user-profile/projects.html
+
+
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -39,6 +41,22 @@ public class BooksController : Controller
             .AsNoTracking().ToList();
         var viewModal = _mapper.Map<IEnumerable<BookViewModel>>(books);
         return View(viewModal);
+
+    }
+
+    public IActionResult Details(int id)
+    {
+        var book = _context.Books
+         .Include(b => b.Categories)
+             .ThenInclude(bc => bc.Category)
+         .Include(b => b.Author)
+         .SingleOrDefault(b => b.Id == id);
+
+
+        if (book is null)
+            return NotFound();
+        var bookViewModel = _mapper.Map<BookDetailsViewModel>(book);
+        return View("Details", bookViewModel);
     }
 
 
@@ -112,7 +130,8 @@ public class BooksController : Controller
         _context.Add(book);
         _context.SaveChanges();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Details), new { id = book.Id });
+
     }
     [HttpGet]
     public IActionResult Edit(int id)
@@ -268,6 +287,7 @@ public class BooksController : Controller
         book.Title = book.Title;
         return NoContent();
     }
+
 
 
     private string GetThumbnailUrl(string url)

@@ -1,7 +1,6 @@
 ﻿namespace Bookify.Web.Core.ViewModel.Book;
 
-
-public class BookViewModel
+public class BookDetailsViewModel
 {
     public int Id { get; set; }
     public string Title { get; set; }
@@ -13,7 +12,10 @@ public class BookViewModel
     public DateTime PublishingDate { get; set; }
     public string Hall { get; set; }
     public bool IsAvailableForRental { get; set; }
-    public string CategoryName { get; set; }
+    public List<string> Categories { get; set; } = new();
+
     public bool IsDeleted { get; set; }
+    public DateTime CreatedOn { get; set; } 
+
 }
 

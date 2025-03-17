@@ -22,6 +22,9 @@ public class MappingProfile : Profile
 
         //Book
         CreateMap<Book, BookViewModel>();
+        CreateMap<Book, BookDetailsViewModel>()
+     .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Categories.Select(c => c.Category.Name).ToList()));
+
         CreateMap<BookFormViewModel, Book>()
             .ReverseMap()
                         .ForMember(dest => dest.Categories, opt => opt.Ignore());

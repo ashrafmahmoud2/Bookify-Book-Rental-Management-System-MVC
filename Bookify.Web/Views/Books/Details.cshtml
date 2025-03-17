@@ -1,0 +1,154 @@
+﻿@model BookDetailsViewModel
+
+@{
+	ViewData["Title"] = "Detais";
+}
+
+
+<div class="card mb-9">
+	<div class="card-body pt-9 pb-0">
+		<!--begin::Details-->
+		<div class="d-flex flex-wrap flex-sm-nowrap mb-6">
+			<!--begin::Image-->
+			<div class="d-flex flex-center flex-shrink-0 bg-light rounded w-100px h-100px w-lg-150px h-lg-150px me-7 mb-4">
+				<img class="mw-50px mw-lg-75px"
+					 src="@(Model.ImageUrl ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc5VtDElo-vbH6jE2tM2jzgGNw7hygWblcr8cdefITrS4pdkh7GaAEIL-hPCrHzL1WHDs&usqp=CAU")"
+					 alt="image">
+
+			</div>
+			<!--end::Image-->
+			<!--begin::Wrapper-->
+			<div class="flex-grow-1">
+				<!--begin::Head-->
+				<div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+					<!--begin::Details-->
+					<div class="d-flex flex-column">
+						<!--begin::Status-->
+						<div class="d-flex align-items-center mb-1">
+							<a href="#" class="text-gray-800 text-hover-primary fs-2 fw-bold me-3"><i class="bi bi-journal-text fs-3 "></i>@Model.Title</a>
+							<span class="badge badge-light-@(Model.IsDeleted ? "danger" : "success") me-auto">@(@Model.IsDeleted ? "Deleted" : "Available")</span>
+						</div>
+						<!--end::Status-->
+						<!--begin::Description-->
+						<div class="d-flex flex-wrap fw-semibold mb-1 fs-5 text-primary text-hover-Gray "><i class="fas fa-pen-nib fs-6 me-1 mt-1"></i>@Model.AuthorName</div>
+						<div class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">@Model.Publisher</div>
+						<!--end::Description-->
+					</div>
+					<!--end::Details-->
+					<!--begin::Actions-->
+					<div class="d-flex mb-4">
+						<a href="#" class="btn btn-sm btn-primary me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_new_target">Edit</a>
+
+
+					</div>
+					<!--end::Actions-->
+				</div>
+				<!--end::Head-->
+				<!--begin::Info-->
+				<div class="d-flex flex-wrap justify-content-start">
+					<!--begin::Stats-->
+					<div class="d-flex flex-wrap">
+						<!--begin::Stat-->
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<!--begin::Number-->
+							<div class="d-flex align-items-center">
+								<div class="fs-4 fw-bold">
+
+									@Model.PublishingDate.ToShortDateString()
+								</div>
+							</div>
+							<!--end::Number-->
+							<!--begin::Label-->
+							<div class="fw-semibold fs-6 text-gray-500">Publishing Date</div>
+							<!--end::Label-->
+						</div>
+						<!--end::Stat-->
+						<!--begin::Stat-->
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<!--begin::Number-->
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-arrow-down fs-3 text-danger me-2"><span class="path1"></span><span class="path2"></span></i>
+								<div class="fs-4 fw-bold counted" data-kt-countup="true" data-kt-countup-value="75" data-kt-initialized="1">@Model.CreatedOn.ToShortDateString()</div>
+							</div>
+							<!--end::Number-->
+							<!--begin::Label-->
+							<div class="fw-semibold fs-6 text-gray-500">Adding Data</div>
+							<!--end::Label-->
+						</div>
+						<!--end::Stat-->
+						<!--begin::Stat-->
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<!--begin::Number-->
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-arrow-up fs-3 text-success me-2"><span class="path1"></span><span class="path2"></span></i>
+								<div class="fs-4 fw-bold counted" data-kt-countup="true" data-kt-countup-value="15000" data-kt-countup-prefix="$" data-kt-initialized="1">$15,000</div>
+							</div>
+							<!--end::Number-->
+							<!--begin::Label-->
+							<div class="fw-semibold fs-6 text-gray-500">Copise</div>
+							<!--end::Label-->
+						</div>
+						<!--end::Stat-->
+					</div>
+					<!--end::Stats-->
+					@foreach (var category in Model.Categories)
+
+					{
+						<span class="badge badge-light-info me-2 d-inline-flex  mt-13 " style="height: fit-content; padding: 5px;">
+							@(category)
+						</span>
+
+
+					}
+				</div>
+				<!--end::Info-->
+
+			</div>
+			<!--end::Wrapper-->
+		</div>
+		<!--end::Details-->
+
+		<div class="separator"></div>
+
+		<!--begin::Nav-->
+		<ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
+			<!--begin::Nav item-->
+			<li class="nav-item">
+				<a class="nav-link text-active-primary py-5 me-6 " href="/metronic8/demo1/apps/projects/project.html">
+					Description
+				</a>
+			</li>
+			<!--end::Nav item-->
+			<!--begin::Nav item-->
+			<li class="nav-item">
+				<a class="nav-link text-active-primary py-5 me-6 " href="/metronic8/demo1/apps/projects/targets.html">
+					Copise
+				</a>
+			</li>
+			<!--end::Nav item-->
+		</ul>
+		<!--end::Nav-->
+	</div>
+</div>
+
+<div class="card">
+	<!--begin::Card header-->
+	<div class="card-header">
+		<!--begin::Card title-->
+		<div class="card-title fs-3 fw-bold">Description</div>
+		<!--end::Card title-->
+	</div>
+	<!--end::Card header-->
+	<div class=" my-10 ms-10 col-11 ">
+		@Html.Raw(Model.Description)
+	</div>
+
+
+</div>
+
+
+
+
+
+
+

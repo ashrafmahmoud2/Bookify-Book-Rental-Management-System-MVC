@@ -26,6 +26,7 @@ public class BookFormViewModel : BaseModel
 
     public IFormFile? Image  { get; set; } = null!;
     public string? ImageUrl { get; set; } = null!;
+    public string? ImageThumbnailUrl { get; set; }
 
     public string Hall { get; set; } = null!;
 

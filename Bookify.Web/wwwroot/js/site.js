@@ -110,7 +110,7 @@ $(document).ready(function () {
     }
 
 
-    //DataTable
+    ////DataTable
     dataTable = $('table').DataTable({
         dom: 'Bfrtip',
         buttons: [

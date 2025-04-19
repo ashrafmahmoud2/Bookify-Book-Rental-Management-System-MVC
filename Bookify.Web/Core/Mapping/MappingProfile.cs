@@ -20,13 +20,15 @@ public class MappingProfile : Profile
            .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
 
 
-        //Book
-        CreateMap<Book, BookViewModel>()
-                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Categories.Select(c => c.Category.Name).ToList()));
-        CreateMap<Book, BookDetailsViewModel>();
+        //Books
         CreateMap<BookFormViewModel, Book>()
             .ReverseMap()
-                        .ForMember(dest => dest.Categories, opt => opt.Ignore());
+            .ForMember(dest => dest.Categories, opt => opt.Ignore());
+
+        CreateMap<Book, BookViewModel>()
+            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author!.Name))
+            .ForMember(dest => dest.Categories,
+                opt => opt.MapFrom(src => src.Categories.Select(c => c.Category!.Name).ToList()));
 
     }
 }

@@ -1,69 +1,69 @@
 ﻿@model IEnumerable<BookViewModel>
 
 @{
-    ViewData["Title"] = "Books";
+	ViewData["Title"] = "Books";
 }
 
 @section Styles {
-    <partial name="_DataTabelsCSS" />
+	<partial name="_DataTabelsCSS" />
 }
 
 <div class="card shadow-sm  border border-primary border-2  ">
-    <div class="card-header">
-        <h3 class="card-title">
-            <div class="symbol symbol-35px me-2">
-                <div class="symbol-label fs-2 fw-semibold text-success"><i class="fas fa-pen-nib fs-3  me-2 text-primary"></i></div>
-            </div>
-            Books
-        </h3>
-        <div class="card-toolbar">
-            <a class="btn btn-sm btn-primary" asp-controller="Books" asp-action="Create">
-                Add
-            </a>
-        </div>
-    </div>
+	<div class="card-header">
+		<h3 class="card-title">
+			<div class="symbol symbol-35px me-2">
+				<div class="symbol-label fs-2 fw-semibold text-success"><i class="bi bi-journal-text fs-2  me-2 text-primary"></i></div>
+			</div>
+			Books
+		</h3>
+		<div class="card-toolbar">
+			<a asp-controller="Books" asp-action="Create" class="btn btn-sm btn-primary">
+				Add
+			</a>
+		</div>
+	</div>
 </div>
 
 
 
 
+<div class="card shadow-sm my-10 ">
+	<div class="card-body">
+		@if (Model.Any())
+		{
+			<table id="Books" class="table">
+				<thead>
+					<tr>
+						    <th class="d-none"></th>
+                            <th>Book</th>
+                            <th>Publisher</th>
+                            <th>Publishing Date</th>
+                            <th>Hall</th>
+                            <th>Categories</th>
+                            <th>Rental</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+@* 			   data will be render here
+ *@				</tbody>
+			</table>
+		}
+		else
+		{
+			<p>No data available.</p>
+		}
 
-<div class="card shadow-sm my-10   ">
-    <div class="card-body">
-        @if (Model.Any())
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Book</th>
-                        <th>Puplisher</th>
-                        <th>PublishingDate</th>
-                        <th>Hall</th>
-                        <th>Rental</th>
-                        <th>Status</th>
-                        <th class="text-end pe-10">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var book in Model) //Assuming Model is an IEnumerable<YourDataType>
-                    {
-                        <partial name="_BookRow" model="book" />
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p>No data available.</p>
-        }
-
-    </div>
+	</div>
 </div>
-
 
 @section CustomScripts {
-    <partial name="_DataTabelsJs" />
+	<partial name="_DataTabelsJs" />
+	<script src="~/js/books.js" asp-append-version="true" ></script>
+
 }
+
 
 
 

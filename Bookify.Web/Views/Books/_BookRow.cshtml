@@ -8,7 +8,7 @@
 		<div class="d-flex align-items-center">
 			<div class="symbol symbol-50px me-3">
 				<img src="@(string.IsNullOrEmpty(Model.ImageThumbnailUrl) ?
-"https://media.istockphoto.com/id/1220490886/vector/vector-no-book-or-reading-sign-illustration.jpg?s=612x612&w=0&k=20&c=RjYeTmuqCH1Jk3MRKUfxFA7ktBYBzDKcbQd55Juj9PQ=" 
+      "https://media.istockphoto.com/id/1220490886/vector/vector-no-book-or-reading-sign-illustration.jpg?s=612x612&w=0&k=20&c=RjYeTmuqCH1Jk3MRKUfxFA7ktBYBzDKcbQd55Juj9PQ=" 
           : @Model.ImageThumbnailUrl)"
 					 class="img-fluid"
 					 alt="Book Cover">
@@ -17,7 +17,7 @@
 
 			<div class="d-flex justify-content-start flex-column">
 				<a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">@Model.Title</a>
-				<span class="text-gray-500 fw-semibold d-block fs-7">@Model.AuthorName</span>
+				<span class="text-gray-500 fw-semibold d-block fs-7">@Model.Author</span>
 			</div>
 		</div>
 	</td>

@@ -7,4 +7,9 @@
 #AtEnd
 - using R2 from image;
 - 
+
+
+# general
+- optmize the ui of table with but this documention you make in file.
+- 
 */

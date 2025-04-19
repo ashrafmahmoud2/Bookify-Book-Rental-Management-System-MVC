@@ -2,14 +2,19 @@
 using Bookify.Web.Settings;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Humanizer;
 using Microsoft.Extensions.Options;
+using System.Drawing;
+using System.Linq.Dynamic.Core;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Bookify.Web.Controllers;
 
 public class BooksController : Controller
 {
-    //16/7
+    //19/1
     //  https://preview.keenthemes.com/metronic8/demo1/pages/user-profile/projects.html
+
 
 
     private readonly ApplicationDbContext _context;
@@ -44,18 +49,55 @@ public class BooksController : Controller
 
     }
 
+    [HttpPost]
+    public IActionResult GetBooks()
+    {
+        var skip = int.Parse(Request.Form["start"]);
+        var pageSize = int.Parse(Request.Form["length"]);
+
+        var searchValue = Request.Form["search[value]"];
+
+        var sortColumnIndex = Request.Form["order[0][column]"];
+        var sortColumn = Request.Form[$"columns[{sortColumnIndex}][name]"];
+        var sortColumnDirection = Request.Form["order[0][dir]"];
+
+        IQueryable<Book> books = _context.Books
+            .Include(b => b.Author)
+            .Include(b => b.Categories)
+            .ThenInclude(c => c.Category);
+
+        if (!string.IsNullOrEmpty(searchValue))
+            books = books.Where(b => b.Title.Contains(searchValue) || b.Author!.Name.Contains(searchValue));
+
+        // Using the System.Linq.Dynamic.Core package allows dynamic ordering by variables. 
+        // Without it, you can only use strongly-typed properties, .OrderBy(b => b.PropertyName).
+
+        books = books.OrderBy($"{sortColumn} {sortColumnDirection}");
+
+        var data = books.Skip(skip).Take(pageSize).ToList();
+
+        var mappedData = _mapper.Map<IEnumerable<BookViewModel>>(data);
+
+        var recordsTotal = books.Count();
+
+        var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
+
+        return Ok(jsonData);
+    }
+
     public IActionResult Details(int id)
     {
         var book = _context.Books
          .Include(b => b.Categories)
-             .ThenInclude(bc => bc.Category)
+         .ThenInclude(bc => bc.Category)
          .Include(b => b.Author)
          .SingleOrDefault(b => b.Id == id);
 
-
         if (book is null)
             return NotFound();
-        var bookViewModel = _mapper.Map<BookDetailsViewModel>(book);
+
+        var bookViewModel = _mapper.Map<BookViewModel>(book);
+
         return View("Details", bookViewModel);
     }
 
@@ -104,8 +146,8 @@ public class BooksController : Controller
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(imageName, stream),
-                UseFilename=true,
-                Folder = "books", 
+                UseFilename = true,
+                Folder = "books",
                 PublicId = Guid.NewGuid().ToString(),
                 Overwrite = false,
             };
@@ -121,7 +163,7 @@ public class BooksController : Controller
 
             book.ImageUrl = Result.SecureUrl.ToString();
             book.ImageThumbnailUrl = GetThumbnailUrl(book.ImageUrl);
-            book.ImagePublicId= Result.PublicId;
+            book.ImagePublicId = Result.PublicId;
         }
 
         foreach (var category in model.SelectedCategories)
@@ -203,7 +245,7 @@ public class BooksController : Controller
 
             using var stream = model.Image.OpenReadStream();
 
-                 var uploadParams = new ImageUploadParams
+            var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(imageName, stream),
                 UseFilename = true,
@@ -221,13 +263,16 @@ public class BooksController : Controller
                 return View("Form", PopulateViewModel(model));
             }
 
-            model.ImageUrl= result.SecureUrl.ToString();
+            model.ImageUrl = result.SecureUrl.ToString();
             imagePuplicId = result.PublicId;
 
         }
 
         else if (!string.IsNullOrEmpty(book.ImageUrl))
+        {
             model.ImageUrl = book.ImageUrl;
+            model.ImageThumbnailUrl = book.ImageThumbnailUrl;
+        }
 
         book = _mapper.Map(model, book);
         book.LastUpdatedOn = DateTime.Now;

@@ -30,5 +30,12 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Categories,
                 opt => opt.MapFrom(src => src.Categories.Select(c => c.Category!.Name).ToList()));
 
+
+
+            //BookCopy
+             CreateMap<BookCopy, BookCopyViewModel>()
+
+            .ForMember(dest => dest.BookTitle,opt => opt.MapFrom(src => src.Book!.Title)); ;
+
     }
 }

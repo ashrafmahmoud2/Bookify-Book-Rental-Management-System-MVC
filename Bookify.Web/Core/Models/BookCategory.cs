@@ -12,3 +12,4 @@ public class BookCategory
     public Category? Category { get; set; }
 
 }
+

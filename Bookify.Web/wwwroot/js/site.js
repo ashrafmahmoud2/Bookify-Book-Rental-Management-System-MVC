@@ -65,6 +65,12 @@ function onModalComplete() {
 
 $(document).ready(function () {
 
+    $('.js-toggle-status').on('click', function () {
+        promt("arrive");
+        // OR
+        console.log("arrive");
+    });
+
     $('form').on('submit', function () {
         if ($('.js-tinymce').length > 0) 
         {
@@ -139,10 +145,12 @@ $(document).ready(function () {
         showSuccessMessage(message);
     }
 
+    //$('.js-render-modal').on('click', function () {
+    //    prompt("arrive")
+    //});
 
     //Handle Add and update
     $('body').delegate('.js-render-modal', 'click', function () {
-
         var btn = $(this);
         var modal = $('#Modal');
 
@@ -166,6 +174,9 @@ $(document).ready(function () {
 
         modal.modal('show');
     });
+
+ 
+
 
     //Handle  toggle-status
     $('body').delegate('.js-toggle-status', 'click', function () {

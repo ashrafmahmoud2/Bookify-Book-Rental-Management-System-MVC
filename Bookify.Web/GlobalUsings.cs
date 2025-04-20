@@ -17,5 +17,6 @@ global using Bookify.Web.Core.ViewModel;
 global using Bookify.Web.Core.ViewModel.Author;
 global using Bookify.Web.Core.ViewModel.Book;
 global using Bookify.Web.Core.ViewModel.Category;
+global using Bookify.Web.Core.ViewModel.BookCopy;
 
 

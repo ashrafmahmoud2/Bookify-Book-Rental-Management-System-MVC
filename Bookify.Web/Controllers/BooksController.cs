@@ -12,7 +12,7 @@ namespace Bookify.Web.Controllers;
 
 public class BooksController : Controller
 {
-    //19/1
+    //19/7
     //  https://preview.keenthemes.com/metronic8/demo1/pages/user-profile/projects.html
 
 
@@ -91,6 +91,7 @@ public class BooksController : Controller
          .Include(b => b.Categories)
          .ThenInclude(bc => bc.Category)
          .Include(b => b.Author)
+         .Include(b => b.Copies)
          .SingleOrDefault(b => b.Id == id);
 
         if (book is null)

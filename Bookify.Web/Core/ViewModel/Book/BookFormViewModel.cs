@@ -21,7 +21,7 @@ public class BookFormViewModel : BaseModel
     public string Publisher { get; set; } = null!;
 
     [Display(Name = "Publishing Date")]
-    [AssertThat("PublishingDate <= Now()",ErrorMessage =Errors.FutureDateNotAllowed)]
+    [AssertThat("PublishingDate <= Now()",ErrorMessage =Errors.NotAllowFutureDates)]
     public DateTime PublishingDate { get; set; } =DateTime.Now; //to be a default value in the view;
 
     public IFormFile? Image  { get; set; } = null!;

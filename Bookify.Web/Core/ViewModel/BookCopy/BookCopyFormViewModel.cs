@@ -6,8 +6,12 @@ public class BookCopyFormViewModel : BaseModel
 
     public int BookId { get; set; }
 
-    public string EditionNumber { get; set; }
+
+    [Display(Name = "Edition Number") , Range(1,1000)]
+    public int EditionNumber { get; set; }
 
     public bool IsAvailableForRental { get; set; }
+
+    public bool ShowRentalInput { get; set; }
 
 }

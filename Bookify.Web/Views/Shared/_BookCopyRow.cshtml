@@ -1,25 +1,19 @@
 ﻿@model BookCopyViewModel
-<tr>
-	<td>@Model.SerialNumber</td>
-	<td>@Model.EditionNumber</td>
-	<td>
-		<span class="js-status badge badge-light-@(@Model.IsAvailableForRental? "danger": "success")">
-			@(@Model.IsAvailableForRental ? "Rental" : "Available")
-		</span>
-	</td>
-	<td>
-		<span class="js-status badge badge-light-@(@Model.IsDeleted? "danger": "success")">
-			@(@Model.IsDeleted ? "Deleted" : "Available")
-		</span>
-	</td>
-	<td>@Model.CreatedOn.ToString("dd/MM/yyyy")</td>
-	<td>
-		<a href="#" class="btn btn-light btn-active-light-primary btn-sm text-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
-			History
-		
-		</a>
-	</td>
 
+<tr>
+    <td>@Model.SerialNumber</td>
+    <td>@Model.EditionNumber</td>
+    <td>
+        <span class="badge badge-light-@(Model.IsAvailableForRental ? "success" : "warning")">
+            @(Model.IsAvailableForRental ? "Available" : "Not Available")
+        </span>
+    </td>
+    <td>
+        <span class="badge badge-light-@(Model.IsDeleted ? "danger" : "success") js-status">
+            @(Model.IsDeleted ? "Deleted" : "Available")
+        </span>
+    </td>
+    <td>@Model.CreatedOn</td>
     <td class="text-end">
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
             Actions
@@ -52,10 +46,3 @@
         </div>
     </td>
 </tr>
-
-
-
-
-
-
-

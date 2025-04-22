@@ -30,7 +30,7 @@ $(document).ready(function () {
                     return `<div class="symbol symbol-50px overflow-hidden me-3">
                                                 <a href="/Books/Details/${row.id}">
                                                     <div class="symbol-label h-70px">
-                                                        <img src="${(row.imageThumbnailUrl === null ? '/images/books/no-book.jpg' : row.imageThumbnailUrl)}" alt="cover" class="w-100">
+                                                        <img src="${(row.imageThumbnailUrl === null ? 'https://bookstoreromanceday.org/wp-content/uploads/2020/08/book-cover-placeholder.png?w=144' : row.imageThumbnailUrl)}" alt="cover" class="w-100">
                                                     </div>
                                                 </a>
                                             </div>

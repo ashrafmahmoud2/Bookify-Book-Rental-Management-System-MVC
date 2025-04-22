@@ -6,7 +6,9 @@ public class BookCopyViewModel
 
     public int BookId { get; set; }
 
-    public string BookTitle { get; set; } 
+    public string BookTitle { get; set; }
+
+    [Display(Name =("Is Available For Rental?"))]
     public bool IsAvailableForRental { get; set; }
 
     public string EditionNumber { get; set; } = string.Empty;

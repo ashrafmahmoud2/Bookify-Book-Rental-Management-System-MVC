@@ -2,6 +2,14 @@
 var dataTable;
 
 
+//js-select2
+function applySellect2() {
+    $('.js-select2').select2();
+    $('.js-select2').on('select2:select', function (e) {
+        $('form').validate().element('#' + $(this).attr('id'));
+    });
+}
+
 
 function dissableSubmitButtonInModal() {
     let submitButton = $('#Modal :submit');
@@ -9,7 +17,7 @@ function dissableSubmitButtonInModal() {
     submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
 }
 
-function disableSubmitButtonInForm() {   
+function disableSubmitButtonInForm() {
     let submitButton = $('.submit-from-btn');
     submitButton.prop('disabled', true);
     submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
@@ -63,17 +71,126 @@ function onModalComplete() {
 }
 
 
+//
+
 $(document).ready(function () {
 
-    $('.js-toggle-status').on('click', function () {
-        promt("arrive");
-        // OR
-        console.log("arrive");
+    //Handle  toggle-status
+    $('body').delegate('.js-toggle-status', 'click', function () {
+        let btn = $(this);
+        let row = btn.closest('tr');
+        let status = row.find('.js-status');
+
+
+        bootbox.confirm({
+            message: `Are you sure you want to toggle the status of item ${btn.data('id')}?`,
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-secondary'
+                }
+
+
+            },
+            callback: function (result) {
+                if (result) {
+
+
+                    $.ajax({
+                        url: btn.data('url'),
+                        type: 'PUT',
+                        data: {
+                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: (lastUpdateOn) => {
+                            let newStatus = status.text().trim() === 'Deleted' ? 'Available' : 'Deleted';
+                            status.text(newStatus).toggleClass('badge-light-danger badge-light-success');
+                            row.find('.js-update-On').html(lastUpdateOn);
+                            row.addClass('animate__animated animate__flash');
+
+                            showSuccessMessage("");
+
+                        },
+                        error: function () {
+
+                            showErrorMessage();
+
+                        }
+
+                    });
+
+                }
+            }
+
+        });
     });
 
-    $('form').on('submit', function () {
-        if ($('.js-tinymce').length > 0) 
-        {
+
+    //Handle Add and update
+    $('body').delegate('.js-render-modal', 'click', function () {
+        var btn = $(this);
+        var modal = $('#Modal');
+
+
+        modal.find('#ModalLabel').text(btn.data('title'));
+
+        if (btn.data('update') !== undefined) {
+            updatedRow = btn.closest('tr');
+        }
+
+        $.get({
+            url: btn.data('url'),
+            success: function (form) {
+                modal.find('.modal-body').html(form);
+                $.validator.unobtrusive.parse(modal);
+                applySellect2()
+            },
+            error: function () {
+                showErrorMessage();
+            }
+        });
+
+        modal.modal('show');
+    });
+
+
+    // Handle Delete
+    $('body').on('click', '.js-delete', function () {
+        prompt("arrive")
+        let btn = $(this);
+        let row = btn.closest('tr');
+
+        bootbox.confirm({
+            message: `Are you sure you want to delete item ${btn.data('id')}?`,
+            buttons: {
+                confirm: { label: 'Yes', className: 'btn-danger' },
+                cancel: { label: 'No', className: 'btn-secondary' }
+            },
+            callback: function (confirmed) {
+                if (!confirmed) return;
+
+                $.ajax({
+                    url: btn.data('url'),
+                    type: 'Delete',
+                    success: () => {
+                        dataTable.row(row).remove().draw(false);
+                        showSuccessMessage("Deleted successfully!");
+                    },
+                    error: showErrorMessage
+                });
+            }
+        });
+    });
+
+
+
+
+    $('form').not('#SignOut').on('submit', function () {
+        if ($('.js-tinymce').length > 0) {
             $('.js-tinymce').each(function () {
                 var input = $(this);
                 var editorId = input.attr('id'); // Get the ID of the textarea
@@ -85,19 +202,15 @@ $(document).ready(function () {
         }
         //var valid = $(this).valid(); 
         //if (valid) disableSubmitButtonInForm();
-         
+
     });
 
- 
+
 
 
 
     //js-select2
-    $('.js-select2').select2();
-
-    $('.js-select2').on('select2:select', function (e) {
-        $('form').validate().element('#' + $(this).attr('id'));
-    });
+    applySellect2();
 
 
 
@@ -111,7 +224,7 @@ $(document).ready(function () {
                 'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
                 'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
             ]
-       
+
         });
     }
 
@@ -128,13 +241,13 @@ $(document).ready(function () {
         ]
     });
 
-   
+
     //flatpickr
     $('.js-flatpickr').flatpickr({
         defaultDate: new Date().toISOString().split('T')[0],
         minDate: "1/1/2022",
         maxDate: "1/1/2026",
-        monthSelectorType:"static"
+        monthSelectorType: "static"
 
     });
 
@@ -175,86 +288,14 @@ $(document).ready(function () {
         modal.modal('show');
     });
 
- 
 
 
-    //Handle  toggle-status
-    $('body').delegate('.js-toggle-status', 'click', function () {
-        let btn = $(this);
-        let row = btn.closest('tr');
-        let status = row.find('.js-status');
-
-        bootbox.confirm({
-            message: `Are you sure you want to toggle the status of item ${btn.data('id')}?`,
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-danger'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-secondary'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    $.ajax({
-                        url: btn.data('url'),
-                        type: 'PUT',
-                        data: {
-                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        success: (lastUpdateOn) => {
-                            let newStatus = status.text().trim() === 'Deleted' ? 'Available' : 'Deleted';
-                            status.text(newStatus).toggleClass('badge-light-danger badge-light-success');
-                            row.find('.js-update-On').html(lastUpdateOn);
-                            row.addClass('animate__animated animate__flash');
-
-                            showSuccessMessage("");
-
-                        },
-                        error: function () {
-                            showErrorMessage();
-                        }
-
-                    });
-
-                }
-            }
-        });
-    });
-
-    // Handle Delete
-    $('body').on('click', '.js-delete', function () {
-        prompt("arrive")
-        let btn = $(this);
-        let row = btn.closest('tr');
-
-        bootbox.confirm({
-            message: `Are you sure you want to delete item ${btn.data('id')}?`,
-            buttons: {
-                confirm: { label: 'Yes', className: 'btn-danger' },
-                cancel: { label: 'No', className: 'btn-secondary' }
-            },
-            callback: function (confirmed) {
-                if (!confirmed) return;
-
-                $.ajax({
-                    url: btn.data('url'),
-                    type: 'Delete',
-                    success: () => {
-                        dataTable.row(row).remove().draw(false);
-                        showSuccessMessage("Deleted successfully!");
-                    },
-                    error: showErrorMessage
-                });
-            }
-        });
-    });
+    //Handal Sign Out
+    $('#SignOut').submit();
+})
 
 
 
-});
 
 
 

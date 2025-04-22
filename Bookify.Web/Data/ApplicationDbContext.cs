@@ -3,12 +3,17 @@ using System.Xml.Serialization;
 
 namespace Bookify.Web.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+
+
+       
+
+
         public DbSet<Author> Authors { get; set; }
 
         public DbSet<Book> Books { get; set; }

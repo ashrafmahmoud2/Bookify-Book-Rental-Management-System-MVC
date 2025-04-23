@@ -1,7 +1,6 @@
 ﻿using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
 namespace Bookify.Web.Core.ViewModel.User;
-
 public class UserFormViewModel
 {
     public string? Id { get; set; }

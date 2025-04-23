@@ -6,7 +6,7 @@ var dataTable;
 function applySellect2() {
     $('.js-select2').select2();
     $('.js-select2').on('select2:select', function (e) {
-        $('form').validate().element('#' + $(this).attr('id'));
+        $('form').not('#SignOut').validate().element('#' + $(this).attr('id'));
     });
 }
 
@@ -42,7 +42,7 @@ function showErrorMessage(message = 'Something went wrong!') {
     Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: message,
+        text: message.responseText = !undefined ? message.responseText : message ,
         customClass: {
             confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
         }

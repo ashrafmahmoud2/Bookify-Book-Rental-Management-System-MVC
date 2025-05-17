@@ -290,8 +290,8 @@ $(document).ready(function () {
 
 
 
-    //Handal Sign Out
-    $('#SignOut').submit();
+    ////Handal Sign Out
+    //$('#SignOut').submit();
 })
 
 

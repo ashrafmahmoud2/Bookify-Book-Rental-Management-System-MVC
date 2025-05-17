@@ -1,4 +1,4 @@
-﻿using Bookify.Web.Core.Models;
+﻿ using Bookify.Web.Core.Models;
 using Bookify.Web.Settings;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -167,6 +167,8 @@ public class BooksController : Controller
             book.ImagePublicId = Result.PublicId;
         }
 
+        book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
         foreach (var category in model.SelectedCategories)
             book.Categories.Add(new BookCategory { CategoryId = category });
 
@@ -182,7 +184,8 @@ public class BooksController : Controller
 
         var book = _context.Books
             .Include(b => b.Categories)
-            .FirstOrDefault(c => c.Id == id);
+            .Include(b => b.Copies)
+            .SingleOrDefault(c => c.Id == id);
         if (book is null)
             return NotFound();
 
@@ -279,9 +282,22 @@ public class BooksController : Controller
         book.LastUpdatedOn = DateTime.Now;
         book.ImageThumbnailUrl = GetThumbnailUrl(book.ImageUrl);
         book.ImagePublicId = imagePuplicId;
+        book.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-        foreach (var category in model.SelectedCategories)
+
+    
+
+            foreach (var category in model.SelectedCategories)
             book.Categories.Add(new BookCategory { CategoryId = category });
+
+
+        if (!model.IsAvailableForRental)
+        {
+            foreach (var copy in book.Copies)
+            {
+                copy.IsAvailableForRental = false;
+            }
+        }
 
         _context.SaveChanges();
 
@@ -329,6 +345,8 @@ public class BooksController : Controller
             return NotFound();
 
         book.IsDeleted = !book.IsDeleted;
+        book.LastUpdatedOn = DateTime.Now;
+        book.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         _context.SaveChanges();
         book.Title = book.Title;
         return NoContent();

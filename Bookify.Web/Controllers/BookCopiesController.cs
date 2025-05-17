@@ -1,7 +1,6 @@
-﻿using Bookify.Web.Core.ViewModel.BookCopy;
+﻿namespace Bookify.Web.Controllers;
 
-namespace Bookify.Web.Controllers;
-
+[Authorize(Roles = AppRoles.Archive)]
 public class BookCopiesController : Controller
 {
 
@@ -47,7 +46,9 @@ public class BookCopiesController : Controller
         BookCopy copy = new()
         {
             EditionNumber = model.EditionNumber,
-            IsAvailableForRental = book.IsAvailableForRental && model.IsAvailableForRental
+            IsAvailableForRental = book.IsAvailableForRental && model.IsAvailableForRental,
+            CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+
         };
 
         book.Copies.Add(copy);
@@ -87,6 +88,7 @@ public class BookCopiesController : Controller
         copy.EditionNumber = model.EditionNumber;
         copy.IsAvailableForRental = copy.Book!.IsAvailableForRental && model.IsAvailableForRental;
         copy.LastUpdatedOn = DateTime.Now;
+        copy.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
         _context.SaveChanges();
 
@@ -106,6 +108,7 @@ public class BookCopiesController : Controller
 
         copy.IsDeleted = !copy.IsDeleted;
         copy.LastUpdatedOn = DateTime.Now;
+        copy.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
         _context.SaveChanges();
 

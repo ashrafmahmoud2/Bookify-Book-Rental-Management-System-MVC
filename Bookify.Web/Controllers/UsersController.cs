@@ -1,15 +1,10 @@
-﻿using Bookify.Web.Core.ViewModel.User;
-using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+﻿namespace Bookify.Web.Controllers;
 
-namespace Bookify.Web.Controllers;
-
+[Authorize(Roles = AppRoles.Admin)]
 public class UsersController : Controller
 {
-    //22/12     
+    //stop in 23/1
+
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
@@ -21,13 +16,12 @@ public class UsersController : Controller
         _mapper = mapper;
     }
 
-    [HttpGet]
+
     public async Task<IActionResult> Index()
     {
         var users = await _userManager.Users.ToListAsync();
         var viewModel = _mapper.Map<IEnumerable<UserViewModel>>(users);
         return View(viewModel);
-
     }
 
     [HttpGet]
@@ -218,5 +212,4 @@ public class UsersController : Controller
 
         return Json(isAllowed);
     }
-
 }

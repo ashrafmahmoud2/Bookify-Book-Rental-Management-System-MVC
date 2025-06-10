@@ -3,7 +3,7 @@
 [Authorize(Roles = AppRoles.Admin)]
 public class UsersController : Controller
 {
-    // 23/3  , get way to open mvc from mobile;
+    // 24  , get way to open mvc from mobile;
     // allow to login by username and email;
 
 
@@ -199,6 +199,25 @@ public class UsersController : Controller
 
         return Ok(user.LastUpdatedOn.ToString());
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Unlock(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user is null)
+            return NotFound();
+
+        var isLocked = await _userManager.IsLockedOutAsync(user);
+
+        if (isLocked)
+            await _userManager.SetLockoutEndDateAsync(user, null);
+
+        return Ok();
+    }
+
+
 
     public async Task<IActionResult> AllowUserName(UserFormViewModel model)
     {

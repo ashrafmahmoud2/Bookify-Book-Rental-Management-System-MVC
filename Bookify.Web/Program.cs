@@ -7,6 +7,7 @@ using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Bookify.Web.Data;
+using Bookify.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,18 @@ builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options => options.Si
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
+
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.User.RequireUniqueEmail = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 1;
+});
+
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplictionUserClaimsPrincipalFactory>();
 
 builder.Services.AddControllersWithViews();
 

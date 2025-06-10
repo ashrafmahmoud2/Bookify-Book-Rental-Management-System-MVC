@@ -3,7 +3,9 @@
 [Authorize(Roles = AppRoles.Admin)]
 public class UsersController : Controller
 {
-    //stop in 23/1
+    // 23/3  , get way to open mvc from mobile;
+    // allow to login by username and email;
+
 
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
@@ -129,6 +131,7 @@ public class UsersController : Controller
 
         return BadRequest(string.Join(',', result.Errors.Select(e => e.Description)));
     }
+
 
     [HttpGet]
     [AjaxOnly]

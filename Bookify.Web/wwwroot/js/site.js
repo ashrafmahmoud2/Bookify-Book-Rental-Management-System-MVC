@@ -289,9 +289,10 @@ $(document).ready(function () {
     });
 
 
-
-    ////Handal Sign Out
-    //$('#SignOut').submit();
+    //Hanlde signout
+    $('.js-signout').on('click', function () {
+        $('#SignOut').submit();
+    });
 })
 
 

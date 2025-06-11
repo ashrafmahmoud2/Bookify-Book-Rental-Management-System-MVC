@@ -1,26 +1,32 @@
-﻿namespace Bookify.Web.Controllers;
+﻿using Bookify.Web.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
+
+namespace Bookify.Web.Controllers;
 
 [Authorize(Roles = AppRoles.Admin)]
 public class UsersController : Controller
 {
-    // 24  , get way to open mvc from mobile;
+    // 24/22  , get way to open mvc from mobile;
     // allow to login by username and email;
 
 
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IEmailSender _emailSender;
     private readonly IMapper _mapper;
 
-    public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
+    public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, IEmailSender emailSender)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
+        _emailSender = emailSender;
     }
 
 
     public async Task<IActionResult> Index()
     {
+        await _emailSender.SendEmailAsync("mmoo19701@gmail.com", "hi from bookify", "<h1>html mesage</h1>");
         var users = await _userManager.Users.ToListAsync();
         var viewModel = _mapper.Map<IEnumerable<UserViewModel>>(users);
         return View(viewModel);
@@ -125,6 +131,9 @@ public class UsersController : Controller
                 await _userManager.AddToRolesAsync(user, model.SelectedRoles);
             }
 
+
+                await _userManager.UpdateSecurityStampAsync(user);
+
             var viewModel = _mapper.Map<UserViewModel>(user);
             return PartialView("_UserRow", viewModel);
         }
@@ -196,6 +205,10 @@ public class UsersController : Controller
         user.LastUpdatedOn = DateTime.Now;
 
         await _userManager.UpdateAsync(user);
+
+
+        if (user.IsDeleted)
+            await _userManager.UpdateSecurityStampAsync(user);
 
         return Ok(user.LastUpdatedOn.ToString());
     }

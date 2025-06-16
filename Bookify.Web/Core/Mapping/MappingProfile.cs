@@ -1,4 +1,6 @@
-﻿namespace Bookify.Web.Core.Mapping;
+﻿using Bookify.Web.Core.ViewModel.Subscriber;
+
+namespace Bookify.Web.Core.Mapping;
 
 public class MappingProfile : Profile
 {
@@ -45,5 +47,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpper()))
             .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.UserName.ToUpper()))
             .ReverseMap();
+
+
+
+        //Subscribers
+        CreateMap<SubscriberFormViewModel, Subscriber>().ReverseMap();
     }
 }

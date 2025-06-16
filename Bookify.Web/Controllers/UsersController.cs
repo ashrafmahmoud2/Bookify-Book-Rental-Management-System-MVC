@@ -1,12 +1,15 @@
 ﻿using Bookify.Web.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Encodings.Web;
+using System.Text;
 
 namespace Bookify.Web.Controllers;
 
 [Authorize(Roles = AppRoles.Admin)]
 public class UsersController : Controller
 {
-    // 24/22  , get way to open mvc from mobile;
+    // 24/last video  
     // allow to login by username and email;
 
 
@@ -14,19 +17,21 @@ public class UsersController : Controller
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailSender _emailSender;
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, IEmailSender emailSender)
+    public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
         _emailSender = emailSender;
+        _webHostEnvironment = webHostEnvironment;
     }
 
 
     public async Task<IActionResult> Index()
     {
-        await _emailSender.SendEmailAsync("mmoo19701@gmail.com", "hi from bookify", "<h1>html mesage</h1>");
+       
         var users = await _userManager.Users.ToListAsync();
         var viewModel = _mapper.Map<IEnumerable<UserViewModel>>(users);
         return View(viewModel);
@@ -70,6 +75,35 @@ public class UsersController : Controller
         if (result.Succeeded)
         {
             await _userManager.AddToRolesAsync(user, model.SelectedRoles);
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity",  user.Id,  code },
+                protocol: Request.Scheme);
+
+
+            var filePath = $"{_webHostEnvironment.WebRootPath}/templates/email.html";
+            StreamReader str = new(filePath);
+
+
+            var body = await str.ReadToEndAsync();
+            str.Close();
+
+            body = body
+                .Replace("imageUrl", "https://cdn-icons-png.flaticon.com/512/6569/6569164.pnghttps://cdn-icons-png.flaticon.com/512/6569/6569164.png")
+                .Replace("[header]", $"Hi {user.FullName}  from Bookify")
+                .Replace("[body]", "confirm you emali")
+                .Replace("[url]", $"{HtmlEncoder.Default.Encode(callbackUrl)}")
+                .Replace("[linkTitle]", "Active Acount");
+
+
+
+
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",body);
+
 
             var viewModel = _mapper.Map<UserViewModel>(user);
             return PartialView("_UserRow", viewModel);

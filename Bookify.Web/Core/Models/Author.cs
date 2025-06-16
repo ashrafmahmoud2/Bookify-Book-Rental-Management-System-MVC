@@ -1,4 +1,7 @@
-﻿namespace Bookify.Web.Core.Models;
+﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
+
+namespace Bookify.Web.Core.Models;
 
 
 [Index(nameof(Name), IsUnique = true)]
@@ -10,3 +13,5 @@ public class Author : BaseModel
 
     public ICollection<Book> Books { get; set; } = new List<Book>();
 }
+
+

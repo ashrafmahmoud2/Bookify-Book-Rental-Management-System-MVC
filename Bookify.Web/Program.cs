@@ -10,6 +10,7 @@ using Bookify.Web.Data;
 using Bookify.Web.Helpers;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Bookify.Web.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 1;
 });
+
+builder.Services.AddDataProtection().SetApplicationName(nameof(Bookify));
 
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplictionUserClaimsPrincipalFactory>();

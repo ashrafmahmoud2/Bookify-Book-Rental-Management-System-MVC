@@ -4,7 +4,9 @@ namespace Bookify.Web.Core.ViewModel.Subscriber;
 
 public class SubscriberFormViewModel
 {
-    public int Id { get; set; }
+    //public int Id { get; set; }
+    
+    public string? Key { get; set; }
 
     [MaxLength(100), Display(Name = "First Name"),
         RegularExpression(RegexPatterns.DenySpecialCharacters, ErrorMessage = Errors.DenySpecialCharacters)]
@@ -20,21 +22,21 @@ public class SubscriberFormViewModel
 
     [MaxLength(14), Display(Name = "National ID"),
         RegularExpression(RegexPatterns.NationalId, ErrorMessage = Errors.InvalidNationalId)]
-    [Remote("AllowNationalId", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
+    [Remote("AllowNationalId", null!, AdditionalFields = "Key", ErrorMessage = Errors.Duplicated)]
     public string NationalId { get; set; } = null!;
 
     [MaxLength(11), Display(Name = "Mobile Number"),
         RegularExpression(RegexPatterns.MobileNumber, ErrorMessage = Errors.InvalidMobileNumber)]
-    [Remote("AllowMobileNumber", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
+    [Remote("AllowMobileNumber", null!, AdditionalFields = "Key", ErrorMessage = Errors.Duplicated)]
     public string PhoneNumber { get; set; } = null!;
     
     public bool HasWhatsApp { get; set; }
 
     [MaxLength(150), EmailAddress]
-    [Remote("AllowEmail", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
+    [Remote("AllowEmail", null!, AdditionalFields = "Key", ErrorMessage = Errors.Duplicated)]
     public string Email { get; set; } = null!;
 
-    [RequiredIf("Id == 0", ErrorMessage = Errors.EmptyImage)]
+    [RequiredIf("Key == ''", ErrorMessage = Errors.EmptyImage)]
     public IFormFile? Image { get; set; }
 
     public string? ImagePublicId { get; set; } // This is the image ID in the cloud, used for deletion or updates.  

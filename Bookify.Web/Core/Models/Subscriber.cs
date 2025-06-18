@@ -2,61 +2,48 @@
 
 namespace Bookify.Web.Core.Models;
 
-//[Index(nameof(FullName), IsUnique = true)]
+[Index(nameof(NationalId), IsUnique = true)]
+[Index(nameof(PhoneNumber), IsUnique = true)]
+[Index(nameof(Email), IsUnique = true)]
 public class Subscriber : BaseModel
 {
     public int Id { get; set; }
 
+    [MaxLength(100)]
     public string FirstName { get; set; } = null!;
 
+    [MaxLength(100)]
     public string LastName { get; set; } = null!;
-
-    //public string FullName => $"{FirstName} {LastName}";
-
-    public string NationalId { get; set; } = null!;
-
-    public string? ImageUrl { get; set; }
-
-    public string? ImageThumbnailUrl { get; set; }
-
-    public string? ImagePublicId { get; set; } // This is the image ID in the cloud, used for deletion or updates.  
 
     public DateTime DateOfBirth { get; set; }
 
-    [EmailAddress]
-    public string Email { get; set; } = null!;
+    [MaxLength(20)]
+    public string NationalId { get; set; } = null!;
 
+    [MaxLength(15)]
     public string PhoneNumber { get; set; } = null!;
 
-    public string Address { get; set; } = null!;
+    public bool HasWhatsApp { get; set; }
 
-    public bool HasWhatsApp { get; set; } = true;
+    [MaxLength(150)]
+    public string Email { get; set; } = null!;
 
-    public int SelectedGovernorate { get; set; }
+    public string ImageUrl { get; set; } = null!;
 
-    public int SelectedArea { get; set; }
-}
+    public string ImageThumbnailUrl { get; set; } = null!;
 
+    public string? ImagePublicId { get; set; } // This is the image ID in the cloud, used for deletion or updates.  
 
+    public int AreaId { get; set; }
 
-
-public class Governorate
-{
-    public int Id { get; set; }
-
-    public string Name { get; set; } = null!;
-
-    public ICollection<Area> Areas { get; set; } = new HashSet<Area>(); 
-}
-
-public class Area
-{
-    public int Id { get; set; }
-
-    public string Name { get; set; } = string.Empty;
+    public Area? Area { get; set; }
 
     public int GovernorateId { get; set; }
 
-    public Governorate Governorate { get; set; } 
-}
+    public Governorate? Governorate { get; set; }
 
+    [MaxLength(500)]
+    public string Address { get; set; } = null!;
+
+    public bool IsBlackListed { get; set; }
+}

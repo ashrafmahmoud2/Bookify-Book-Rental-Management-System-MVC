@@ -19,17 +19,25 @@ namespace Bookify.Web.Data
         public DbSet<Governorate> Governorates { get; set; }
         public DbSet<Area> Areas { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder builder)
-        {
+         {
             builder.HasSequence<int>("SerialNumber", schema: "shared")
-                .StartsAt(1000001);
+                  .StartsAt(1000001);
 
             builder.Entity<BookCopy>()
                 .Property(e => e.SerialNumber)
                 .HasDefaultValueSql("NEXT VALUE FOR shared.SerialNumber");
 
             builder.Entity<BookCategory>().HasKey(e => new { e.BookId, e.CategoryId });
+
+            var cascadeFKs = builder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => fk.DeleteBehavior == DeleteBehavior.Cascade && !fk.IsOwnership);
+
+            foreach (var fk in cascadeFKs)
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
+
+
 
             base.OnModelCreating(builder);
         }

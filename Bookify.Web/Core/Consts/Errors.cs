@@ -20,5 +20,6 @@ public static class Errors
     public const string OnlyNumbers = "Only Arabic/English  digits are allowed.";
     public const string DenySpecialCharacters = "Special characters are not allowed.";
     public const string InvalidMobileNumber = "Invalid mobile number.";
-    public const string InvalidUrl = "Invalid URL format.";
+    public const string InvalidNationalId = "Invalid national ID.";
+    public const string EmptyImage = "Please select an image.";
 }

@@ -1,312 +1,236 @@
-﻿@using Bookify.Web.Core.ViewModel.Subscriber
-@model SubscriberFormViewModel
+﻿@model SubscriberFormViewModel
 
 @{
-	var formActionType = Model.Id == 0 ? "Create" : "Edit";
-	ViewData["Title"] = $"{formActionType} Subscriber Form";
-	var image = Model.ImageUrl;
-	
+    ViewData["Title"] = "Subscriber Form";
 }
 
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">@(Model.Id.Equals(0) ? "Add" : "Edit") Subscriber</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-controller="Subscribers" enctype="multipart/form-data" id="Form">
+            @if (Model.Id > 0)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" asp-for="Image"></label>
+                <div class="col-lg-8">
+                    <!--begin::Image input-->
+                    <div class="image-input image-input-empty" data-kt-image-input="true" style="background-image: url(@(string.IsNullOrEmpty(Model.ImageUrl) ? "/assets/images/avatar-blank.svg" : Model.ImageThumbnailUrl))">
+                        <!--begin::Image preview wrapper-->
+                        <div class="image-input-wrapper w-100px h-100px"></div>
+                        <!--end::Image preview wrapper-->
+                        <!--begin::Edit button-->
+                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                               data-kt-image-input-action="change"
+                               data-bs-dismiss="click">
+                            <i class="bi bi-pencil-fill fs-7"></i>
 
-<div class="card mb-5 mb-xl-10">
-	<!--begin::Card header-->
-	<div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
-		<!--begin::Card title-->
-		<div class="card-title m-0">
-			<h3 class="fw-bold m-0">@formActionType Subscriber </h3>
-
-		</div>
-		<!--end::Card title-->
-	</div>
-	<!--begin::Card header-->
-	<!--begin::Content-->
-	<div id="kt_account_settings_profile_details" class="collapse show">
-		<!--begin::Form-->
-		<form method="post" asp-controller="Subscribers" asp-action="Create" enctype="multipart/form-data" id="kt_account_profile_details_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
-			<!--begin::Card body-->
-			<div class="card-body border-top p-9">
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label fw-semibold fs-6">Avatar</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8">
-						<!--begin::Image input-->
-						<div class="image-input image-input-outline" data-kt-image-input="true"
-							 style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrl)
-         ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc5VtDElo-vbH6jE2tM2jzgGNw7hygWblcr8cdefITrS4pdkh7GaAEIL-hPCrHzL1WHDs&usqp=CAU"
-         : Model.ImageUrl)'">
-							<!--begin::Preview existing avatar-->
-							<div class="image-input-wrapper w-125px h-125px" style="background-image: url(/metronic8/demo1/assets/media/avatars/300-1.jpg)"></div>
-							<!--end::Preview existing avatar-->
-							<!--begin::Label-->
-							<label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change avatar" data-bs-original-title="Change avatar" data-kt-initialized="1">
-								<i class="ki-duotone ki-pencil fs-7"><span class="path1"></span><span class="path2"></span></i>
-								<!--begin::Inputs-->
-								<input id="imageUrl-value" asp-for="Image" type="file" accept=".png, .jpg, .jpeg">
-								<input type="hidden" name="avatar_remove">
-								<!--end::Inputs-->
-							</label>
-							<!--end::Label-->
-							<!--begin::Cancel-->
-							<span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" aria-label="Cancel avatar" data-bs-original-title="Cancel avatar" data-kt-initialized="1">
-								<i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-							</span>
-							<!--end::Cancel-->
-							<!--begin::Remove-->
-							<span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" aria-label="Remove avatar" data-bs-original-title="Remove avatar" data-kt-initialized="1">
-								<i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-							</span>
-							<!--end::Remove-->
-						</div>
-						<!--end::Image input-->
-						<!--begin::Hint-->
-						<div class="text-muted fs-7">Allowed formats: .png, .jpg, .jpeg (Max: 2MB)</div>
-						<span asp-validation-for="Image" class="text-danger"></span>
-						<!--end::Hint-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Full Name</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Col-->
-							<div class="col-lg-6 fv-row">
-								<input type="text" asp-for="FirstName" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-									   placeholder="Enter First Name">
-								<span asp-validation-for="FirstName" class="text-danger"></span>
-							</div>
-							<!--end::Col-->
-							<!--begin::Col-->
-							<div class="col-lg-6 fv-row">
-								<input type="text" asp-for="LastName" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-									   placeholder="Enter Last Name">
-								<span asp-validation-for="LastName" class="text-danger"></span>
-							</div>
-							<!--end::Col-->
-
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label fw-semibold fs-6">
-						<span class="required">Date Of Birth</span>
-						<span class="ms-1" data-bs-toggle="tooltip" aria-label="Provide a valid date"
-							  data-bs-original-title="Date should be between 01/01/1900 and no more than 3 years ago." data-kt-initialized="1">
-							<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-								<span class="path1"></span><span class="path2"></span><span class="path3"></span>
-							</i>
-						</span>
-					</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8 fv-row">
-						<input type="date" asp-for="DateOfBirth" class="form-control form-control-lg form-control-solid"
-							   placeholder="Enter Date of Birth"
-							   min="1900-01-01" max="@DateTime.Today.AddYears(-3).ToString("yyyy-MM-dd")"
-							   title="Date must be between 01/01/1900 and no more than 3 years ago.">
-						<span asp-validation-for="DateOfBirth" class="text-danger"></span>
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label fw-semibold fs-6">
-						<span class="required">National ID</span>
-						<span class="ms-1" data-bs-toggle="tooltip" aria-label="National ID must be valid"
-							  data-bs-original-title="National ID must be 14 digits" data-kt-initialized="1">
-							<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-								<span class="path1"></span><span class="path2"></span><span class="path3"></span>
-							</i>
-						</span>
-					</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8 fv-row">
-						<input type="text" asp-for="NationalId" class="form-control form-control-lg form-control-solid"
-							   placeholder="Enter National ID" maxlength="14" pattern="^\d{14}$"
-							   title="National ID must be exactly 14 digits">
-						<span asp-validation-for="NationalId" class="text-danger"></span>
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Contacts</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Col-->
-							<div class="col-lg-6 fv-row">
-								<input type="email" asp-for="Email" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-									   placeholder="Enter Email">
-								<span asp-validation-for="Email" class="text-danger"></span>
-							</div>
-							<!--end::Col-->
-							<!--begin::Col-->
-							<div class="col-lg-6 fv-row">
-								<input type="tel" asp-for="PhoneNumber" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-									   placeholder="Enter Phone Number" pattern="^01[0125]\d{8}$" maxlength="11"
-									   title="Phone number must start with 01 followed by 10 digits.">
-								<span asp-validation-for="PhoneNumber" class="text-danger"></span>
-							</div>
-
-							<!--end::Col-->
-
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Governorate/Area</label>
-					<div class="col-lg-8">
-						<div class="row">
-							<!-- Governorate Dropdown -->
-							<div class="col-lg-6 fv-row">
-								<select id="GovernorateDropdown" asp-for="SelectedGovernorate"
-										asp-items="@(new SelectList(Model.Governorates, "Id", "Name", Model.SelectedGovernorate))"
-										class="form-control form-control-lg form-control-solid mb-3 mb-lg-0">
-									<option value="">Select Governorate</option>
-								</select>
-								<span asp-validation-for="SelectedGovernorate" class="text-danger"></span>
-							</div>
-
-							<!-- Area Dropdown -->
-							<div class="col-lg-6 fv-row">
-								<select id="AreaDropdown" asp-for="SelectedArea" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0">
-									<option value="">@Model.Id > 0 ? @Model.SelectedArea : Select Area</option>
-								</select>
-								<span asp-validation-for="SelectedArea" class="text-danger"></span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Address</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8 fv-row">
-						<input type="text" asp-for="Address" class="form-control form-control-lg form-control-solid "
-							   placeholder="Enter Your Address" maxlength="250"
-							   pattern="^[a-zA-Z0-9\s,.-]{5,250}$"
-							   title="Address should be between 5 and 250 characters, allowing letters, numbers, spaces, commas, and periods.">
-						<span asp-validation-for="Address" class="text-danger"></span>
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-				<!--begin::Input group-->
-				<div class="row mb-6">
-					<!--begin::Label-->
-					<label class="col-lg-4 col-form-label required fw-semibold fs-6">
-						Has WhatsApp?
-					</label>
-					<!--end::Label-->
-					<!--begin::Col-->
-					<div class="col-lg-8 fv-row">
-						<!--begin::Options-->
-						<div class="d-flex align-items-center mt-3">
-							<!--begin::Option-->
-							<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
-								<input asp-for="HasWhatsApp" class="form-check-input" type="checkbox" checked="checked" />
-								<span class="fw-semibold ps-2 fs-6">Yes</span>
-							</label>
-							<!--end::Option-->
-						</div>
-						<!--end::Options-->
-
-						<span asp-validation-for="HasWhatsApp" class="text-danger"></span>
-					</div>
-					<!--end::Col-->
-				</div>
-				<!--end::Input group-->
-			</div>
-
-
-
-
-			<!--end::Card body-->
-			<!--begin::Actions-->
-			<div class="card-footer d-flex justify-content-end py-6 px-9">
-				<button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
-				<button type="submit" class="btn btn-primary" id="kt_account_profile_details_submit">Save Changes</button>
-			</div>
-			<!--end::Actions-->
-			<input type="hidden">
-		</form>
-		<!--end::Form-->
-	</div>
-	<!--end::Content-->
+                            <!--begin::Inputs-->
+                            <input type="file" asp-for="Image" accept=".png, .jpg, .jpeg" />
+                            <input type="hidden" name="avatar_remove" />
+                            <!--end::Inputs-->
+                        </label>
+                        <!--end::Edit button-->
+                        <!--begin::Cancel button-->
+                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                              data-kt-image-input-action="cancel"
+                              data-bs-dismiss="click">
+                            <i class="bi bi-x fs-2"></i>
+                        </span>
+                        <!--end::Cancel button-->
+                        <!--begin::Remove button-->
+                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                              data-kt-image-input-action="remove"
+                              data-bs-dismiss="click">
+                            <i class="bi bi-x fs-2"></i>
+                        </span>
+                        <!--end::Remove button-->
+                    </div>
+                    <div class="form-text">Allowed file types: png, jpg, jpeg and cannot be more that 2 MB</div>
+                    <span asp-validation-for="Image" class="text-danger d-block"></span>
+                    <!--end::Image input-->
+                </div>
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6">Full Name</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="First name" asp-for="FirstName">
+                            <span asp-validation-for="FirstName" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                            <input type="text" class="form-control form-control-lg form-control-solid" placeholder="Last name" asp-for="LastName">
+                            <span asp-validation-for="LastName" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="DateOfBirth"></label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 js-datepicker" placeholder="Date of Birth" asp-for="DateOfBirth">
+                            <span asp-validation-for="DateOfBirth" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="NationalId"></label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="National ID" asp-for="NationalId">
+                            <span asp-validation-for="NationalId" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6">Contacts</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Email" asp-for="Email">
+                            <span asp-validation-for="Email" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Mobile number" asp-for="PhoneNumber">
+                            <span asp-validation-for="PhoneNumber" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6">Governorate/Area</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="Select a governorate..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="GovernorateId" asp-items="Model.Governorates">
+                                <option value="">Select a governorate...</option>
+                            </select>
+                            <span asp-validation-for="GovernorateId" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="Select an area..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="AreaId" asp-items="Model.Areas">
+                                <option value="">Select an area...</option>
+                            </select>
+                            <span asp-validation-for="AreaId" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Address"></label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <textarea class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Address" asp-for="Address"></textarea>
+                            <span asp-validation-for="Address" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label fw-semibold fs-6">Has WhatsApp?</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8 pt-3">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-3 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid align-self-center">
+                            <label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+                                <input class="form-check-input" type="checkbox" asp-for="HasWhatsApp">
+                                <span class="fw-semibold ps-2 fs-6">Yes</span>
+                            </label>
+                            <span asp-validation-for="HasWhatsApp" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary" form="Form">
+            <span class="indicator-label">
+                Save
+            </span>
+            <span class="indicator-progress">
+                Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+        <a class="btn btn-light text-primary ms-3" asp-action="Index">Cancel</a>
+    </div>
 </div>
 
-
-@section Scripts {
-	<partial name="_ValidationScriptsPartial" />
-
-	<script>
-		$(document).ready(function() {
-			var selectedGovernorateId = $("#GovernorateDropdown").val();
-			var selectedAreaId = "@Model.SelectedArea";
-
-			function loadAreas(governorateId) {
-				$("#AreaDropdown").empty().append('<option value="">Loading...</option>');
-				if (governorateId) {
-					$.ajax({
-						url: '/Subscribers/GetAreasByGovernorate',
-						type: 'GET',
-						data: { governorateId: governorateId },
-						success: function(data) {
-							$("#AreaDropdown").empty().append('<option value="">Select Area</option>');
-							$.each(data, function(index, area) {
-								var isSelected = (area.id == selectedAreaId) ? "selected" : "";
-								$("#AreaDropdown").append('<option value="' + area.id + '" ' + isSelected + '>' + area.name + '</option>');
-							});
-						},
-						error: function() {
-							$("#AreaDropdown").empty().append('<option value="">Error loading areas</option>');
-						}
-					});
-				} else {
-					$("#AreaDropdown").empty().append('<option value="">Select Area</option>');
-				}
-			}
-
-			// Preload areas for selected governorate in edit mode
-			if (selectedGovernorateId) {
-				loadAreas(selectedGovernorateId);
-			}
-
-			// Reload areas dynamically when governorate is changed
-			$("#GovernorateDropdown").change(function() {
-				var governorateId = $(this).val();
-				loadAreas(governorateId);
-			});
-		});
-	</script>
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/subscriber-form.js" asp-append-version="true"></script>
 }

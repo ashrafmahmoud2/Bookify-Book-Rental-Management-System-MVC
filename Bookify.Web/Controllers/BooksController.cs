@@ -1,4 +1,5 @@
-﻿ using Bookify.Web.Core.Models;
+﻿using Bookify.Web.Core.Models;
+using Bookify.Web.Core.ViewModel.Subscriber;
 using Bookify.Web.Settings;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -178,14 +179,11 @@ public class BooksController : Controller
         return RedirectToAction(nameof(Details), new { id = book.Id });
 
     }
-    [HttpGet]
+
     public IActionResult Edit(int id)
     {
+        var book = _context.Books.Include(b => b.Categories).SingleOrDefault(b => b.Id == id);
 
-        var book = _context.Books
-            .Include(b => b.Categories)
-            .Include(b => b.Copies)
-            .SingleOrDefault(c => c.Id == id);
         if (book is null)
             return NotFound();
 
@@ -196,7 +194,6 @@ public class BooksController : Controller
 
         return View("Form", viewModel);
     }
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -285,9 +282,9 @@ public class BooksController : Controller
         book.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
 
-    
 
-            foreach (var category in model.SelectedCategories)
+
+        foreach (var category in model.SelectedCategories)
             book.Categories.Add(new BookCategory { CategoryId = category });
 
 

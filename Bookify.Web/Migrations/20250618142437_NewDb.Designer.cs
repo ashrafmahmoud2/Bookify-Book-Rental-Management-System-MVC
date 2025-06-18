@@ -12,20 +12,20 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250422115019_addCreatedByIdColumn")]
-    partial class addCreatedByIdColumn
+    [Migration("20250618142437_NewDb")]
+    partial class NewDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "6.0.35")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.HasSequence<int>("SerialNumber", "shared")
-                .StartsAt(1000L);
+                .StartsAt(1000001L);
 
             modelBuilder.Entity("Bookify.Web.Core.Models.ApplicationUser", b =>
                 {
@@ -486,7 +486,7 @@ namespace Bookify.Web.Migrations
                     b.HasOne("Bookify.Web.Core.Models.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "CreatedBy")
@@ -509,13 +509,13 @@ namespace Bookify.Web.Migrations
                     b.HasOne("Bookify.Web.Core.Models.Book", "Book")
                         .WithMany("Categories")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Bookify.Web.Core.Models.Category", "Category")
                         .WithMany("Books")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Book");
@@ -528,7 +528,7 @@ namespace Bookify.Web.Migrations
                     b.HasOne("Bookify.Web.Core.Models.Book", "Book")
                         .WithMany("Copies")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "CreatedBy")

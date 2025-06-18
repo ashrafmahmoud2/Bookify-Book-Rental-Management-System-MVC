@@ -49,8 +49,23 @@ public class MappingProfile : Profile
             .ReverseMap();
 
 
+        //Governrate && Areas
+        CreateMap<Governorate, SelectListItem>()
+        .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<Area, SelectListItem>()
+     .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+         .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+
+
 
         //Subscribers
         CreateMap<SubscriberFormViewModel, Subscriber>().ReverseMap();
+        CreateMap<SubscriberViewModel, Subscriber>().ReverseMap();
+        CreateMap<SubscriberSearchResultViewModel, Subscriber>().ReverseMap()
+             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
+
+
     }
 }

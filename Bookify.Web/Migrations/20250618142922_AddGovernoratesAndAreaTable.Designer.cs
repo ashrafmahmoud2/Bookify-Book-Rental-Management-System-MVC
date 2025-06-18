@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250616160732_AddGovernoratesAndAreasTable")]
-    partial class AddGovernoratesAndAreasTable
+    [Migration("20250618142922_AddGovernoratesAndAreaTable")]
+    partial class AddGovernoratesAndAreaTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -128,16 +128,39 @@ namespace Bookify.Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("GovernorateId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastUpdatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("GovernorateId");
+
+                    b.HasIndex("LastUpdatedById");
+
+                    b.HasIndex("Name", "GovernorateId")
+                        .IsUnique();
 
                     b.ToTable("Areas");
                 });
@@ -363,70 +386,14 @@ namespace Bookify.Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Governorates");
-                });
-
-            modelBuilder.Entity("Bookify.Web.Core.Models.Subscriber", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Area")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Governorate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("HasWhatsApp")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ImagePublicId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageThumbnailUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastUpdatedById")
                         .HasColumnType("nvarchar(450)");
@@ -434,13 +401,10 @@ namespace Bookify.Web.Migrations
                     b.Property<DateTime?>("LastUpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("NationalId")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -448,7 +412,10 @@ namespace Bookify.Web.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.ToTable("Subscribers");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Governorates");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -586,13 +553,25 @@ namespace Bookify.Web.Migrations
 
             modelBuilder.Entity("Bookify.Web.Core.Models.Area", b =>
                 {
+                    b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("Bookify.Web.Core.Models.Governorate", "Governorate")
                         .WithMany("Areas")
                         .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "LastUpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedById");
+
+                    b.Navigation("CreatedBy");
+
                     b.Navigation("Governorate");
+
+                    b.Navigation("LastUpdatedBy");
                 });
 
             modelBuilder.Entity("Bookify.Web.Core.Models.Author", b =>
@@ -615,7 +594,7 @@ namespace Bookify.Web.Migrations
                     b.HasOne("Bookify.Web.Core.Models.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "CreatedBy")
@@ -638,13 +617,13 @@ namespace Bookify.Web.Migrations
                     b.HasOne("Bookify.Web.Core.Models.Book", "Book")
                         .WithMany("Categories")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Bookify.Web.Core.Models.Category", "Category")
                         .WithMany("Books")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Book");
@@ -657,7 +636,7 @@ namespace Bookify.Web.Migrations
                     b.HasOne("Bookify.Web.Core.Models.Book", "Book")
                         .WithMany("Copies")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "CreatedBy")
@@ -690,7 +669,7 @@ namespace Bookify.Web.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("Bookify.Web.Core.Models.Subscriber", b =>
+            modelBuilder.Entity("Bookify.Web.Core.Models.Governorate", b =>
                 {
                     b.HasOne("Bookify.Web.Core.Models.ApplicationUser", "CreatedBy")
                         .WithMany()

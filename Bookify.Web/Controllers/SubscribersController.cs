@@ -1,8 +1,11 @@
 ﻿using Bookify.Web.Core.Models;
 using Bookify.Web.Core.ViewModel.Subscriber;
+using Bookify.Web.Services;
 using Bookify.Web.Settings;
 using CloudinaryDotNet;
+using Hangfire;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 
 namespace Bookify.Web.Controllers;
@@ -14,13 +17,15 @@ public class SubscribersController : Controller
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly Cloudinary _cloudinary;
     private readonly IDataProtector _dataProtector;
+    private readonly IEmailBodyBuilder _emailBodyBuilder ;
+    private readonly IEmailSender _emailSender;
 
 
     private List<string> _allowedExtensions = new() { ".jpg", ".jpeg", ".png" };
     private int _maxAllowedSize = 2097152;
 
     public SubscribersController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment,
-        IOptions<CloudinarySettings> cloudinary, IDataProtectionProvider dataProtector)
+        IOptions<CloudinarySettings> cloudinary, IDataProtectionProvider dataProtector, IEmailBodyBuilder emailBodyBuilder, IEmailSender emailSender)
     {
         _context = context;
         _mapper = mapper;
@@ -34,6 +39,8 @@ public class SubscribersController : Controller
 
         _cloudinary = new Cloudinary(account);
         _dataProtector = dataProtector.CreateProtector("MySecuerKey");
+        _emailBodyBuilder = emailBodyBuilder;
+        _emailSender = emailSender;
     }
 
     public IActionResult Index()
@@ -73,6 +80,7 @@ public class SubscribersController : Controller
         var subscriber = _context.Subscribers
             .Include(s => s.Governorate)
             .Include(s => s.Area)
+            .Include(s => s.Subscriptions)
             .SingleOrDefault(s => s.Id == subsciberId);
 
         if (subscriber is null)
@@ -83,7 +91,6 @@ public class SubscribersController : Controller
 
         return View(viewModel);
     }
-
 
 
     public IActionResult Create()
@@ -145,6 +152,15 @@ public class SubscribersController : Controller
             subscriber.ImageThumbnailUrl = GetThumbnailUrl(subscriber.ImageUrl);
             subscriber.ImagePublicId = Result.PublicId;
         }
+
+        Subscription subscription = new()
+        {
+            CreatedById = subscriber.CreatedById,
+            CreatedOn = subscriber.CreatedOn,
+            Subscriber = subscriber,
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today.AddYears(1)
+        };
 
 
         subscriber.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
@@ -264,6 +280,51 @@ public class SubscribersController : Controller
         return url.Replace("/upload/", "/upload/c_thumb,w_200,g_face/");
     }
 
+
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public IActionResult RenewSubscription(string sKey)
+    //{
+    //    var subscriberId = int.Parse(_dataProtector.Unprotect(sKey));
+
+
+    //    var subscriber = _context.Subscribers
+    //        .Include(s => s.Subscriptions)
+    //        .SingleOrDefault(s => s.Id == subscriberId);
+
+    //    if (subscriber is null)
+    //        return NotFound();
+
+
+    //    if (subscriber.IsBlackListed)
+    //        BadRequest();
+
+    //    var lastSubscription = subscriber.Subscriptions.Last();
+    //    var startData = lastSubscription.EndDate < DateTime.Today
+    //        ? DateTime.Today 
+    //        : lastSubscription.EndDate.AddDays(1) ;
+
+
+    //    Subscription newSubscription = new ()
+    //    {
+    //        CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+    //        CreatedOn = DateTime.Now,
+    //        StartDate = startData,
+    //        EndDate = startData.AddYears(1),
+
+
+    //    };
+
+    //    _context.Subscriptions.Add(newSubscription);
+
+    //    _context.SaveChanges();
+
+    //    var viewModel = _mapper.Map<SubscriptionViewModel>(newSubscription);
+
+    //    return PartialView("_SubscriptionRow", viewModel);
+    //}
+
+
     [AjaxOnly]
     public async Task<IActionResult> GetAreasByGovernorate(int governorateId)
     {
@@ -310,6 +371,89 @@ public class SubscribersController : Controller
 
         return Json(isAllowed);
     }
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RenewSubscription(string sKey)
+    {
+        var subscriberId = int.Parse(_dataProtector.Unprotect(sKey));
+
+        var subscriber = _context.Subscribers
+                                    .Include(s => s.Subscriptions)
+                                    .SingleOrDefault(s => s.Id == subscriberId);
+
+        if (subscriber is null)
+            return NotFound();
+
+        if (subscriber.IsBlackListed)
+            return BadRequest();
+
+        var lastSubscription = subscriber.Subscriptions.Last();
+
+        var startDate = lastSubscription.EndDate < DateTime.Today
+                        ? DateTime.Today
+                        : lastSubscription.EndDate.AddDays(1);
+
+        Subscription newSubscription = new()
+        {
+            CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+            CreatedOn = DateTime.Now,
+            StartDate = startDate,
+            EndDate = startDate.AddYears(1)
+        };
+
+        subscriber.Subscriptions.Add(newSubscription);
+
+        _context.SaveChanges();
+
+        //Send email and WhatsApp Message
+        var placeholders = new Dictionary<string, string>()
+            {
+                { "imageUrl", "https://res.cloudinary.com/devcreed/image/upload/v1668739431/icon-positive-vote-2_jcxdww.svg" },
+                { "header", $"Hello {subscriber.FirstName}," },
+                { "body", $"your subscription has been renewed through {newSubscription.EndDate.ToString("d MMM, yyyy")} 🎉🎉" }
+            };
+
+        var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
+
+        BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
+            subscriber.Email,
+            "Bookify Subscription Renewal", body));
+
+        //BackgroundJob.Schedule(() => _emailSender.SendEmailAsync(
+        //    subscriber.Email,
+        //    "Bookify Subscription Renewal", body), TimeSpan.FromMinutes(1));
+
+        //if (subscriber.HasWhatsApp)
+        //{
+        //    var components = new List<WhatsAppComponent>()
+        //        {
+        //            new WhatsAppComponent
+        //            {
+        //                Type = "body",
+        //                Parameters = new List<object>()
+        //                {
+        //                    new WhatsAppTextParameter { Text = subscriber.FirstName },
+        //                    new WhatsAppTextParameter { Text = newSubscription.EndDate.ToString("d MMM, yyyy") },
+        //                }
+        //            }
+        //        };
+
+        //    var mobileNumber = _webHostEnvironment.IsDevelopment() ? "Add Your Number" : subscriber.MobileNumber;
+
+        //    //Change 2 with your country code
+        //    BackgroundJob.Enqueue(() => _whatsAppClient
+        //        .SendMessage($"2{mobileNumber}", WhatsAppLanguageCode.English,
+        //        WhatsAppTemplates.SubscriptionRenew, components));
+        //}
+
+        var viewModel = _mapper.Map<SubscriptionViewModel>(newSubscription);
+
+        return PartialView("_SubscriptionRow", viewModel);
+    }
+
 
     private SubscriberFormViewModel PopulateViewModel(SubscriberFormViewModel? model = null)
     {

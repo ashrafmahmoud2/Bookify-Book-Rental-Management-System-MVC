@@ -66,6 +66,8 @@ public class MappingProfile : Profile
         CreateMap<SubscriberSearchResultViewModel, Subscriber>().ReverseMap()
              .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
 
+        CreateMap<SubscriptionViewModel, Subscription>().ReverseMap();
+
 
     }
 }

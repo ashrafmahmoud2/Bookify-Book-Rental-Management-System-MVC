@@ -16,11 +16,12 @@ namespace Bookify.Web.Data
         public DbSet<BookCopy> BookCopies { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
-        public DbSet<Governorate> Governorates { get; set; }
         public DbSet<Area> Areas { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Governorate> Governorates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
-         {
+        {
             builder.HasSequence<int>("SerialNumber", schema: "shared")
                   .StartsAt(1000001);
 

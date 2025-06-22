@@ -3,8 +3,6 @@
 [Authorize(Roles = AppRoles.Archive)]
 public class BookCopiesController : Controller
 {
-
-    //20/7
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
@@ -114,5 +112,7 @@ public class BookCopiesController : Controller
 
         return Ok();
     }
+
+
 
 }

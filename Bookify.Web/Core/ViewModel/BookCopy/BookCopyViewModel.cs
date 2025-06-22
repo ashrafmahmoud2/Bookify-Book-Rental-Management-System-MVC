@@ -3,21 +3,12 @@
 public class BookCopyViewModel
 {
     public int Id { get; set; }
-
+    public string? BookTitle { get; set; }
     public int BookId { get; set; }
-
-    public string BookTitle { get; set; }
-
-    [Display(Name =("Is Available For Rental?"))]
+    public string? BookThumbnailUrl { get; set; }
     public bool IsAvailableForRental { get; set; }
-
-    public string EditionNumber { get; set; } = string.Empty;
-
+    public int EditionNumber { get; set; }
     public int SerialNumber { get; set; }
-
-
     public bool IsDeleted { get; set; }
-
-    public DateTime CreatedOn { get; set; } 
-
+    public DateTime CreatedOn { get; set; }
 }

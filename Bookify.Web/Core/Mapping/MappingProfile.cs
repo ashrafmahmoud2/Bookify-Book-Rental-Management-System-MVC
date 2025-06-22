@@ -1,4 +1,5 @@
-﻿using Bookify.Web.Core.ViewModel.Subscriber;
+﻿using Bookify.Web.Core.ViewModel.Rental;
+using Bookify.Web.Core.ViewModel.Subscriber;
 
 namespace Bookify.Web.Core.Mapping;
 
@@ -36,7 +37,9 @@ public class MappingProfile : Profile
 
             //BookCopy
              CreateMap<BookCopy, BookCopyViewModel>()
-            .ForMember(dest => dest.BookTitle,opt => opt.MapFrom(src => src.Book!.Title)); ;
+            .ForMember(dest => dest.BookTitle,opt => opt.MapFrom(src => src.Book!.Title))
+            .ForMember(dest => dest.BookId,opt => opt.MapFrom(src => src.Book!.Id))
+            .ForMember(dest => dest.BookThumbnailUrl,opt => opt.MapFrom(src => src.Book!.ImageThumbnailUrl)); 
 
         CreateMap<BookCopy, BookCopyFormViewModel>();
 
@@ -67,6 +70,12 @@ public class MappingProfile : Profile
              .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
 
         CreateMap<SubscriptionViewModel, Subscription>().ReverseMap();
+
+
+        //Rental
+        CreateMap<Rental, RentalViewModel>().ReverseMap();
+        CreateMap<RentalCopy, RentalCopyViewModel>().ReverseMap();
+
 
 
     }

@@ -11,20 +11,25 @@ function applySellect2() {
 }
 
 
-function dissableSubmitButtonInModal() {
-    let submitButton = $('#Modal :submit');
-    submitButton.prop('disabled', true);
-    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
+//function dissableSubmitButtonInModal() {
+//    let submitButton = $('#Modal :submit');
+//    submitButton.prop('disabled', true);
+//    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
+//}
+
+//function disableSubmitButtonInForm() {
+//    let submitButton = $('.submit-from-btn');
+//    submitButton.prop('disabled', true);
+//    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
+//}
+
+function disableSubmitButton() {
+  /*  $('body :submit').attr('disabled', 'disabled').attr('data-kt-indicator', 'on');*/
 }
 
-function disableSubmitButtonInForm() {
-    let submitButton = $('.submit-from-btn');
-    submitButton.prop('disabled', true);
-    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
-}
 
 function onModalBegin() {
-    dissableSubmitButtonInModal();
+    disableSubmitButton();
 }
 
 function showSuccessMessage(message = 'Saved successfully!') {
@@ -69,6 +74,8 @@ function onModalSuccess(rowHtml) {
 function onModalComplete() {
     $('#Modal :submit').prop('disabled', false).text('Save');
 }
+
+
 
 
 //

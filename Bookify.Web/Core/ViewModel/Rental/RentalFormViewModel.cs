@@ -6,6 +6,8 @@ public class RentalFormViewModel
 
     public IList<int> SelectedCopies { get; set; } = new List<int>();
 
+    public int? MaxAllowedCopies { get; set; }
+
 }
 
 

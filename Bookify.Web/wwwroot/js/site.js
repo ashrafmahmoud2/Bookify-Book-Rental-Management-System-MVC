@@ -1,4 +1,4 @@
-﻿var updatedRow;
+﻿ var updatedRow;
 var dataTable;
 
 
@@ -23,13 +23,13 @@ function applySellect2() {
 //    submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...');
 //}
 
-function disableSubmitButton() {
-  /*  $('body :submit').attr('disabled', 'disabled').attr('data-kt-indicator', 'on');*/
+function disableSubmitButton(btn) {
+    $(btn).attr('disabled', 'disabled').attr('data-kt-indicator', 'on');
 }
 
 
 function onModalBegin() {
-    disableSubmitButton();
+    disableSubmitButton($('#Modal').find(':submit'));
 }
 
 function showSuccessMessage(message = 'Saved successfully!') {
@@ -242,8 +242,8 @@ $(document).ready(function () {
                 }
             });
         }
-        //var valid = $(this).valid(); 
-        //if (valid) disableSubmitButtonInForm();
+        //var valid = $(this).valid();
+        //if (valid) disableSubmitButton($(this).find(':submit'));
 
     });
 

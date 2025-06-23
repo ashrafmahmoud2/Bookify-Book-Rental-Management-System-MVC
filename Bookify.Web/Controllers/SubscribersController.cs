@@ -7,6 +7,7 @@ using Hangfire;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Bookify.Web.Controllers;
 public class SubscribersController : Controller
@@ -81,9 +82,9 @@ public class SubscribersController : Controller
             .Include(s => s.Governorate)
             .Include(s => s.Area)
             .Include(s => s.Subscriptions)
-            .Include(s => s.Rentals)
+            .Include(s => s.Rentals.Where(s => !s.IsDeleted))
             .ThenInclude(r => r.RentalCopies)
-            .SingleOrDefault(s => s.Id == subsciberId);
+            .SingleOrDefault(s => s.Id == subsciberId );
 
         if (subscriber is null)
             return NotFound();
@@ -281,51 +282,6 @@ public class SubscribersController : Controller
 
         return url.Replace("/upload/", "/upload/c_thumb,w_200,g_face/");
     }
-
-
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    //public IActionResult RenewSubscription(string sKey)
-    //{
-    //    var subscriberId = int.Parse(_dataProtector.Unprotect(sKey));
-
-
-    //    var subscriber = _context.Subscribers
-    //        .Include(s => s.Subscriptions)
-    //        .SingleOrDefault(s => s.Id == subscriberId);
-
-    //    if (subscriber is null)
-    //        return NotFound();
-
-
-    //    if (subscriber.IsBlackListed)
-    //        BadRequest();
-
-    //    var lastSubscription = subscriber.Subscriptions.Last();
-    //    var startData = lastSubscription.EndDate < DateTime.Today
-    //        ? DateTime.Today 
-    //        : lastSubscription.EndDate.AddDays(1) ;
-
-
-    //    Subscription newSubscription = new ()
-    //    {
-    //        CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
-    //        CreatedOn = DateTime.Now,
-    //        StartDate = startData,
-    //        EndDate = startData.AddYears(1),
-
-
-    //    };
-
-    //    _context.Subscriptions.Add(newSubscription);
-
-    //    _context.SaveChanges();
-
-    //    var viewModel = _mapper.Map<SubscriptionViewModel>(newSubscription);
-
-    //    return PartialView("_SubscriptionRow", viewModel);
-    //}
-
 
     [AjaxOnly]
     public async Task<IActionResult> GetAreasByGovernorate(int governorateId)

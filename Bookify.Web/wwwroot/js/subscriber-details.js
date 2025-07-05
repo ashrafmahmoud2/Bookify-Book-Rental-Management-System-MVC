@@ -70,18 +70,22 @@ $(document).ready(function () {
                         data: {
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                         },
-                        success: function () {
+                        success: function (result) {
 
                             $button.closest('tr').remove();
 
                             if ($('#RentalsTable tbody tr').length === 0) {
                                 $('.table-responsive').addClass('d-none');
                                 $('.alert').removeClass('d-none');
-
-                                prompt("yes")
                             }
 
-                            prompt("no")
+
+
+                            const $totalCount = $('#TotelCopies');
+                            const currentCount = parseInt($totalCount.text(), 10);
+                            $totalCount.text(currentCount - result);
+
+                           
 
 
                         showSuccessMessage();

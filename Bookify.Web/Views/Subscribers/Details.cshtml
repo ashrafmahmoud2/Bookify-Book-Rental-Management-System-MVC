@@ -122,7 +122,7 @@
 			<!--end:::Tab item-->
 			<!--begin:::Tab item-->
 			<li class="nav-item" role="presentation">
-				<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="true" role="tab">Rentals</a>
+				<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="true"  role="tab">Rentals</a>
 			</li>
 			<!--end:::Tab item-->
 		</ul>
@@ -155,8 +155,9 @@
 											</svg>
 										</span>
 										<!--end::Svg Icon-->
-										<div class="ms-2">
-											@Model.Rentals.Sum(r => r.NumberOfCopies)
+										<div class="ms-2" >
+											<span id="TotelCopies">@Model.Rentals.Sum(r => r.NumberOfCopies)</span>
+											
 										</div>
 									</div>
 									<div class="fs-7 fw-normal text-muted">Total number of copies.</div>

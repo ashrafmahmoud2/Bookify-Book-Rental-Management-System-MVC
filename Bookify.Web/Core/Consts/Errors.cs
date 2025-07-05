@@ -28,4 +28,5 @@ public static class Errors
     public const string MaxCopiesReached = "This subscriber has reached the max number for rentals.";
     public const string CopyIsInRental = "This copy is already rentaled.";
     public const string CannotCancelRental = "You can only cancel rentals created today.";
+    public const string DuplicateCopyInRental = "This copy is already included in the current rental.";
 }

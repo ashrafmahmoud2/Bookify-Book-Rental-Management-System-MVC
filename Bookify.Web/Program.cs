@@ -118,10 +118,11 @@ var webHostEnvironment = scope.ServiceProvider.GetRequiredService<IWebHostEnviro
 var emailBodyBuilder = scope.ServiceProvider.GetRequiredService<IEmailBodyBuilder>();
 var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 
-var hangfireTasks = new HangfireTasks(dbContext, webHostEnvironment,/* whatsAppClient,*/
+var hangfireTasks = new HangfireTasks(dbContext, webHostEnvironment, /*whatsAppClient,*/
     emailBodyBuilder, emailSender);
 
 RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
+RecurringJob.AddOrUpdate(() => hangfireTasks.RentalsExpirationAlert(), "0 14 * * *");
 
 app.MapControllerRoute(
     name: "default",

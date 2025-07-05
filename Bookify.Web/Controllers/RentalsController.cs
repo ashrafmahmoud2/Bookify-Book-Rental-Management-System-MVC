@@ -9,29 +9,38 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Bookify.Web.Controllers;
-
 [Authorize(Roles = AppRoles.Reception)]
 public class RentalsController : Controller
 {
-    
-    //32 / 6
-
-    //in MarkAsDeleted 
-    //if we delete rentel , but RentalCopies don't save tha we don't delete 
-    //in this case
-    //var copyIsInRental = _context.RentalCopies.Any(c => c.BookCopyId == copy.Id && !c.ReturnDate.HasValue);
-    //so if we dalat we shoud give ReturnDate value;
 
 
-    private readonly IDataProtector _dataProtector;
     private readonly ApplicationDbContext _context;
+    private readonly IDataProtector _dataProtector;
     private readonly IMapper _mapper;
 
-    public RentalsController(IDataProtectionProvider dataProtector, ApplicationDbContext context, IMapper mapper)
+    public RentalsController(ApplicationDbContext context,
+        IDataProtectionProvider dataProtector,
+        IMapper mapper)
     {
-        _dataProtector = dataProtector.CreateProtector("MySecuerKey");
         _context = context;
+        _dataProtector = dataProtector.CreateProtector("MySecuerKey");
         _mapper = mapper;
+    }
+
+    public IActionResult Details(int id)
+    {
+        var rental = _context.Rentals
+            .Include(r => r.RentalCopies)
+            .ThenInclude(c => c.BookCopy)
+            .ThenInclude(c => c!.Book)
+            .SingleOrDefault(r => r.Id == id);
+
+        if (rental is null)
+            return NotFound();
+
+        var viewModel = _mapper.Map<RentalViewModel>(rental);
+
+        return View(viewModel);
     }
 
     public IActionResult Create(string sKey)
@@ -58,7 +67,7 @@ public class RentalsController : Controller
             MaxAllowedCopies = maxAllowedCopies
         };
 
-        return View(viewModel);
+        return View("Form", viewModel);
     }
 
     [HttpPost]
@@ -66,7 +75,7 @@ public class RentalsController : Controller
     public IActionResult Create(RentalFormViewModel model)
     {
         if (!ModelState.IsValid)
-            return View(model);
+            return View("Form", model);
 
         var subscriberId = int.Parse(_dataProtector.Unprotect(model.SubscriberKey));
 
@@ -84,39 +93,10 @@ public class RentalsController : Controller
         if (!string.IsNullOrEmpty(errorMessage))
             return View("NotAllowedRental", errorMessage);
 
-        var selectedCopies = _context.BookCopies
-            .Include(c => c.Book)
-            .Include(c => c.Rentals)
-            .Where(c => model.SelectedCopies.Contains(c.SerialNumber))
-            .ToList();
+        var (rentalsError, copies) = ValidateCopies(model.SelectedCopies, subscriberId);
 
-        var currentSubscriberRentals = _context.Rentals.Where(r => !r.IsDeleted)
-            .Include(r => r.RentalCopies)
-            .ThenInclude(c => c.BookCopy)
-            .Where(r => r.SubscriberId == subscriberId)
-            .SelectMany(r => r.RentalCopies)
-            .Where(c => !c.ReturnDate.HasValue)
-            .Select(c => c.BookCopy!.BookId)
-            .ToList();
-
-
-
-
-        List<RentalCopy> copies = new();
-
-        foreach (var copy in selectedCopies)
-        {
-            if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
-                return View("NotAllowedRental", Errors.NotAvilableRental);
-
-            if (copy.Rentals.Any(c => !c.ReturnDate.HasValue))
-                return View("NotAllowedRental", Errors.CopyIsInRental);
-
-            if (currentSubscriberRentals.Any(bookId => bookId == copy.BookId))
-                return View("NotAllowedRental", $"This subscriber already has a copy for '{copy.Book.Title}' Book");
-
-            copies.Add(new RentalCopy { BookCopyId = copy.Id });
-        }
+        if (!string.IsNullOrEmpty(rentalsError))
+            return View("NotAllowedRental", rentalsError);
 
         Rental rental = new()
         {
@@ -127,7 +107,86 @@ public class RentalsController : Controller
         subscriber.Rentals.Add(rental);
         _context.SaveChanges();
 
-        return Ok();
+        return RedirectToAction(nameof(Details), new { id = rental.Id });
+    }
+
+    public IActionResult Edit(int id)
+    {
+        var rental = _context.Rentals
+            .Include(r => r.RentalCopies)
+            .ThenInclude(c => c.BookCopy)
+            .SingleOrDefault(r => r.Id == id);
+
+        if (rental is null || rental.CreatedOn.Date != DateTime.Today)
+            return NotFound();
+
+        var subscriber = _context.Subscribers
+            .Include(s => s.Subscriptions)
+            .Include(s => s.Rentals)
+            .ThenInclude(r => r.RentalCopies)
+            .SingleOrDefault(s => s.Id == rental.SubscriberId);
+
+        var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber!, rental.Id);
+
+        if (!string.IsNullOrEmpty(errorMessage))
+            return View("NotAllowedRental", errorMessage);
+
+        var currentCopiesIds = rental.RentalCopies.Select(c => c.BookCopyId).ToList();
+
+        var currentCopies = _context.BookCopies
+            .Where(c => currentCopiesIds.Contains(c.Id))
+            .Include(c => c.Book)
+            .ToList();
+
+        var viewModel = new RentalFormViewModel
+        {
+            SubscriberKey = _dataProtector.Protect(subscriber!.Id.ToString()),
+            MaxAllowedCopies = maxAllowedCopies,
+            CurrentCopies = _mapper.Map<IEnumerable<BookCopyViewModel>>(currentCopies)
+        };
+
+        return View("Form", viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit(RentalFormViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View("Form", model);
+
+        var rental = _context.Rentals
+            .Include(r => r.RentalCopies)
+            .SingleOrDefault(r => r.Id == model.Id);
+
+        if (rental is null || rental.CreatedOn.Date != DateTime.Today)
+            return NotFound();
+
+        var subscriberId = int.Parse(_dataProtector.Unprotect(model.SubscriberKey));
+
+        var subscriber = _context.Subscribers
+            .Include(s => s.Subscriptions)
+            .Include(s => s.Rentals)
+            .ThenInclude(r => r.RentalCopies)
+            .SingleOrDefault(s => s.Id == subscriberId);
+
+        var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber!, model.Id);
+
+        if (!string.IsNullOrEmpty(errorMessage))
+            return View("NotAllowedRental", errorMessage);
+
+        var (rentalsError, copies) = ValidateCopies(model.SelectedCopies, subscriberId, rental.Id);
+
+        if (!string.IsNullOrEmpty(rentalsError))
+            return View("NotAllowedRental", rentalsError);
+
+        rental.RentalCopies = copies;
+        rental.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        rental.LastUpdatedOn = DateTime.Now;
+
+        _context.SaveChanges();
+
+        return RedirectToAction(nameof(Details), new { id = rental.Id });
     }
 
     [HttpPost]
@@ -160,33 +219,25 @@ public class RentalsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult MarkAsDeleted(int rentalId)
+    public IActionResult MarkAsDeleted(int id)
     {
-        var rental = _context.Rentals
-            .Include(r => r.RentalCopies)
-            .FirstOrDefault(r => r.Id == rentalId && !r.IsDeleted);
+        var rental = _context.Rentals.Find(id);
 
-        if (rental is null)
+        if (rental is null || rental.CreatedOn.Date != DateTime.Today)
             return NotFound();
 
-        if (rental.CreatedOn.Date != DateTime.Today)
-            return BadRequest(Errors.CannotCancelRental);
-
-
         rental.IsDeleted = true;
-        
-        rental.LastUpdatedOn = DateTime.Today;
+        rental.LastUpdatedOn = DateTime.Now;
         rental.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-
-
         _context.SaveChanges();
-        return Ok();
+
+        var copiesCount = _context.RentalCopies.Count(r => r.RentalId == id);
+
+        return Ok(copiesCount);
     }
 
-
-
-    private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber)
+    private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber, int? rentalId = null)
     {
         if (subscriber.IsBlackListed)
             return (errorMessage: Errors.BlackListedSubscriber, maxAllowedCopies: null);
@@ -194,7 +245,10 @@ public class RentalsController : Controller
         if (subscriber.Subscriptions.Last().EndDate < DateTime.Today.AddDays((int)RentalsConfigurations.RentalDuration))
             return (errorMessage: Errors.InactiveSubscriber, maxAllowedCopies: null);
 
-        var currentRentals = subscriber.Rentals.SelectMany(r => r.RentalCopies).Count(c => !c.ReturnDate.HasValue);
+        var currentRentals = subscriber.Rentals
+            .Where(r => rentalId == null || r.Id != rentalId)
+            .SelectMany(r => r.RentalCopies)
+            .Count(c => !c.ReturnDate.HasValue);
 
         var availableCopiesCount = (int)RentalsConfigurations.MaxAllowedCopies - currentRentals;
 
@@ -202,5 +256,41 @@ public class RentalsController : Controller
             return (errorMessage: Errors.MaxCopiesReached, maxAllowedCopies: null);
 
         return (errorMessage: string.Empty, maxAllowedCopies: availableCopiesCount);
+    }
+
+    private (string errorMessage, ICollection<RentalCopy> copies) ValidateCopies(IEnumerable<int> selectedSerials, int subscriberId, int? rentalId = null)
+    {
+        var selectedCopies = _context.BookCopies
+            .Include(c => c.Book)
+            .Include(c => c.Rentals)
+            .Where(c => selectedSerials.Contains(c.SerialNumber))
+            .ToList();
+
+        var currentSubscriberRentals = _context.Rentals
+            .Include(r => r.RentalCopies)
+            .ThenInclude(c => c.BookCopy)
+            .Where(r => r.SubscriberId == subscriberId && (rentalId == null || r.Id != rentalId))
+            .SelectMany(r => r.RentalCopies)
+            .Where(c => !c.ReturnDate.HasValue)
+            .Select(c => c.BookCopy!.BookId)
+            .ToList();
+
+        List<RentalCopy> copies = new();
+
+        foreach (var copy in selectedCopies)
+        {
+            if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
+                return (errorMessage: Errors.NotAvilableRental, copies);
+
+            if (copy.Rentals.Any(c => !c.ReturnDate.HasValue && (rentalId == null || c.RentalId != rentalId)))
+                return (errorMessage: Errors.CopyIsInRental, copies);
+
+            if (currentSubscriberRentals.Any(bookId => bookId == copy.BookId))
+                return (errorMessage: $"This subscriber already has a copy for '{copy.Book.Title}' Book", copies);
+
+            copies.Add(new RentalCopy { BookCopyId = copy.Id });
+        }
+
+        return (errorMessage: string.Empty, copies);
     }
 }

@@ -75,6 +75,10 @@ public class MappingProfile : Profile
         //Rental
         CreateMap<Rental, RentalViewModel>().ReverseMap();
         CreateMap<RentalCopy, RentalCopyViewModel>().ReverseMap();
+        CreateMap<RentalCopy, CopyHistoryViewModel>()
+            .ForMember(dest => dest.SubscriberMobile, opt => opt.MapFrom(src => src.Rental!.Subscriber!.PhoneNumber))
+            .ForMember(dest => dest.SubscriberName, opt => opt.MapFrom(src => $"{src.Rental!.Subscriber!.LastName} {src.Rental!.Subscriber!.LastName}"));
+
 
 
 

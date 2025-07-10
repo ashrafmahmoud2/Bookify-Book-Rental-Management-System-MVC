@@ -5,4 +5,5 @@ public enum RentalsConfigurations
 
    RentalDuration = 7,
     MaxAllowedCopies = 3,
+    MaxRentalDuration = 14,
 }

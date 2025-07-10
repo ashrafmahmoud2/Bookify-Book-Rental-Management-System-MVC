@@ -19,6 +19,18 @@
 				</a>
 			</div>
 		}
+		else
+		{
+			if (Model.RentalCopies.Any(rc => !rc.ReturnDate.HasValue))
+			{
+				<div class="card-toolbar">
+					<a class="btn btn-sm btn-primary" asp-action="Return" asp-route-rentalId="@Model.Id">
+						Return
+					</a>
+				</div>
+			}
+
+		}
 
 	</div>
 </div>
@@ -79,7 +91,7 @@
 									<span class="badge badge-light-success fs-7 fw-bold">0 Day(s)</span>
 								}
 							</td>
-							<td class="text-end pe-4">
+							<td class=" pe-4">
 								@item.ExtendedOn?.ToString("d MMM, yyyy")
 							</td>
 							<td class=" pe-4">

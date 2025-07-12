@@ -13,8 +13,6 @@ namespace Bookify.Web.Controllers;
 public class RentalsController : Controller
 {
 
-    //make the db file : to when git idea put in hi
-
     private readonly ApplicationDbContext _context;
     private readonly IDataProtector _dataProtector;
     private readonly IMapper _mapper;

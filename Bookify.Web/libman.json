@@ -122,6 +122,10 @@
     {
       "library": "fslightbox@3.5.0",
       "destination": "wwwroot/lib/fslightbox/"
+    },
+    {
+      "library": "apexcharts@5.2.0",
+      "destination": "wwwroot/lib/apexcharts/"
     }
   ]
 }

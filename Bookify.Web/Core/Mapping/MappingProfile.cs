@@ -1,4 +1,5 @@
 ﻿using Bookify.Web.Core.ViewModel.Rental;
+using Bookify.Web.Core.ViewModel.Serach;
 using Bookify.Web.Core.ViewModel.Subscriber;
 
 namespace Bookify.Web.Core.Mapping;
@@ -78,6 +79,10 @@ public class MappingProfile : Profile
         CreateMap<RentalCopy, CopyHistoryViewModel>()
             .ForMember(dest => dest.SubscriberMobile, opt => opt.MapFrom(src => src.Rental!.Subscriber!.PhoneNumber))
             .ForMember(dest => dest.SubscriberName, opt => opt.MapFrom(src => $"{src.Rental!.Subscriber!.LastName} {src.Rental!.Subscriber!.LastName}"));
+
+
+        //search
+        CreateMap<Book, SearchBookViewModel>().ReverseMap();
 
 
 

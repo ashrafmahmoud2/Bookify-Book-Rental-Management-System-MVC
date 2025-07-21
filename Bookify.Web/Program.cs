@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Hangfire;
 using Hangfire.Dashboard;
 using Bookify.Web.Tasks;
+using HashidsNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddDataProtection().SetApplicationName(nameof(Bookify));
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("bookify-super-secret-salt", minHashLength: 11));
 
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplictionUserClaimsPrincipalFactory>();

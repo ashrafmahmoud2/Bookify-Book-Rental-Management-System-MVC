@@ -50,7 +50,7 @@ public class BooksController : Controller
 
     }
 
-    [HttpPost]
+    [HttpPost,IgnoreAntiforgeryToken]
     public IActionResult GetBooks()
     {
         var skip = int.Parse(Request.Form["start"]);
@@ -110,7 +110,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public async Task<IActionResult> Create(BookFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -196,7 +196,7 @@ public class BooksController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public async Task<IActionResult> Edit(BookFormViewModel model)
     {
         if (!ModelState.IsValid)

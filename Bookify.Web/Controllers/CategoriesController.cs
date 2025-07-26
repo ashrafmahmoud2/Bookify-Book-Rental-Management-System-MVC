@@ -33,7 +33,7 @@ public class CategoriesController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Create(CategoryFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -63,7 +63,7 @@ public class CategoriesController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Edit(CategoryFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -86,7 +86,7 @@ public class CategoriesController : Controller
     }
 
     [HttpPut]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult ToggleStatus(int id)
     {
 

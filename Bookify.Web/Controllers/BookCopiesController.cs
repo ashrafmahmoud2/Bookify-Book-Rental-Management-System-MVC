@@ -30,7 +30,7 @@ public class BookCopiesController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Create(BookCopyFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -87,7 +87,7 @@ public class BookCopiesController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Edit(BookCopyFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -111,7 +111,7 @@ public class BookCopiesController : Controller
     }
 
     [HttpPut]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult ToggleStatus(int id)
     {
         var copy = _context.BookCopies.Find(id);

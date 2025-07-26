@@ -50,7 +50,7 @@ public class SubscribersController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Search(SearchFormViewModel model)
     {
         //model.Value = "30308161201733";
@@ -103,7 +103,7 @@ public class SubscribersController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public async Task<IActionResult> Create(SubscriberFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -192,7 +192,7 @@ public class SubscribersController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public async Task<IActionResult> Edit(SubscriberFormViewModel model)
     {
 
@@ -333,7 +333,7 @@ public class SubscribersController : Controller
 
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult RenewSubscription(string sKey)
     {
         var subscriberId = int.Parse(_dataProtector.Unprotect(sKey));

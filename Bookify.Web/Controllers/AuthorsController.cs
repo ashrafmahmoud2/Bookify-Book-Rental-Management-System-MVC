@@ -31,7 +31,7 @@ public class AuthorsController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Create(AuthorFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -62,7 +62,7 @@ public class AuthorsController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Edit(AuthorFormViewModel model)
     {
 

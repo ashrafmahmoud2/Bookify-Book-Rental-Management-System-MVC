@@ -73,6 +73,13 @@ options.AddPolicy("AdminsOnly", policy =>
     policy.RequireRole(AppRoles.Admin);
 }));
 
+
+//builder.Services.AddViewToHTML();
+
+// Automatically apply anti-forgery token validation to all POST  action 
+builder.Services.AddMvc(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute())
+);
 var app = builder.Build();
 
 

@@ -71,7 +71,7 @@ public class RentalsController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Create(RentalFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -149,7 +149,7 @@ public class RentalsController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Edit(RentalFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -226,7 +226,7 @@ public class RentalsController : Controller
 
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult Return(RentalReturnFormViewModel model)
     {
         var rental = _context.Rentals
@@ -314,7 +314,7 @@ public class RentalsController : Controller
 
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult GetCopyDetails(SearchFormViewModel model)
     {
         if (!ModelState.IsValid)
@@ -342,7 +342,7 @@ public class RentalsController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+   
     public IActionResult MarkAsDeleted(int id)
     {
         var rental = _context.Rentals.Find(id);

@@ -10,8 +10,7 @@ namespace Bookify.Web.Controllers;
 public class SearchController : Controller
 {
 
-    // Integrating Typeahead.js (https://twitter.github.io/typeahead.js) for search functionality as of version 35/10.
-    // To customize the HTML output of search results from Typeahead.js, we use Handlebars.js for templating.
+
 
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;

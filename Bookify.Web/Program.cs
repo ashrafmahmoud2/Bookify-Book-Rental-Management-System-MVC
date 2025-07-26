@@ -15,20 +15,22 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Bookify.Web.Tasks;
 using HashidsNet;
+using Serilog;
+using Serilog.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    
+
 options.UseSqlServer(connectionString));
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
 
-builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
@@ -48,9 +50,13 @@ builder.Services.AddSingleton<IHashids>(_ => new Hashids("bookify-super-secret-s
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplictionUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-builder.Services.AddTransient<IEmailBodyBuilder , EmailBodyBuilder>();
+builder.Services.AddTransient<IEmailBodyBuilder, EmailBodyBuilder>();
 
 builder.Services.AddControllersWithViews();
+
+//Add Serilog
+Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Host.UseSerilog();
 
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 builder.Services.AddExpressiveAnnotations();
@@ -69,6 +75,9 @@ options.AddPolicy("AdminsOnly", policy =>
 
 var app = builder.Build();
 
+
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -80,6 +89,10 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseExceptionHandler("/Home/Error");
+
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
 
 app.UseHttpsRedirection();
@@ -125,6 +138,18 @@ var hangfireTasks = new HangfireTasks(dbContext, webHostEnvironment, /*whatsAppC
 
 RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
 RecurringJob.AddOrUpdate(() => hangfireTasks.RentalsExpirationAlert(), "0 14 * * *");
+
+
+app.Use(async (context, next) =>
+{
+    LogContext.PushProperty("UserId", context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+    LogContext.PushProperty("UserName", context.User.FindFirst(ClaimTypes.Name)?.Value);
+
+    await next();
+});
+
+app.UseSerilogRequestLogging();
+
 
 app.MapControllerRoute(
     name: "default",
